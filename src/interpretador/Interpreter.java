@@ -19,7 +19,8 @@ public class Interpreter {
 		
 		// Programa teste 1: "a = 10 + 20";
 		//Stm prog = new AssignStm("a",new OpExp(new NumExp(10), new NumExp(20), OpExp.plus));
-		Stm prog
+		Stm prog = new CompoundStm(new AssignStm( "a", new OpExp( new NumExp(2), new NumExp(3), OpExp.plus ) ),
+				new AssignStm("b", new OpExp( new IdExp("a"), new IdExp("a"), OpExp.times)));
 		
 		Interpreter i = new Interpreter();
 		Table t = i.interpStm(prog, null);
