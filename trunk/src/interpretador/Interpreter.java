@@ -24,9 +24,11 @@ public class Interpreter {
 		
 		Interpreter i = new Interpreter();
 		Table t = i.interpStm(prog, null);
-		i.printTable(t);
 		
-		System.out.println("Yo mon");
+		System.out.println("Program code:");
+		i.printTree(prog);
+		System.out.println("\nProgram Environment Table:");
+		i.printTable(t);
 	}
 	
 	public void printTable (Table t){
@@ -35,6 +37,69 @@ public class Interpreter {
 			System.out.println(t.id + " -> " + t.val);
 			printTable(t.tail);
 		}
+	}
+	
+	public void printTree (Stm s){
+		if( s instanceof CompoundStm ){
+			printTree (((CompoundStm) s).stm1);
+			System.out.print(";\n");
+			printTree (((CompoundStm) s).stm2);
+		}
+		else if( s instanceof AssignStm ){
+			System.out.print(((AssignStm) s).i + " := ");
+			printTree(((AssignStm) s).exp);
+		}
+		else if( s instanceof PrintStm ){
+			System.out.print("Print(bla)");
+			/*TODO print not working*/
+		}
+	}
+	
+	public void printTree (Exp e){		
+		if( e instanceof IdExp ) {
+			System.out.print(((IdExp) e).id);
+		}
+		
+		else if( e instanceof NumExp ){
+			System.out.print(((NumExp) e).num);
+		}
+		
+		else if( e instanceof OpExp){
+			String c = " ? ";
+			
+			switch(((OpExp) e).operador){
+			case 1:
+				// Plus
+				c = " + ";
+				break;
+			case 2:
+				// Minus
+				c = " - ";
+				break;
+			case 3:
+				// Times
+				c = " * ";
+				break;
+			case 4:
+				// Div
+				c = " / ";
+				break;
+			default:
+				break;
+			}
+			
+			printTree(((OpExp) e).left);
+			System.out.print(c);
+			printTree(((OpExp) e).right);
+		}
+		
+		else if( e instanceof EseqExp){
+			System.out.print("(");
+			printTree(((EseqExp) e).stm);
+			System.out.print(",");
+			printTree(((EseqExp) e).exp);
+			System.out.print(")");
+		}		
 	}
 	
 	// Adiciona o elemento novo como cabeça da lista anterior.
