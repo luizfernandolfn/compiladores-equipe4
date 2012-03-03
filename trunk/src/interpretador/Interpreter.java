@@ -16,10 +16,24 @@ package interpretador;
 public class Interpreter {
 	
 	public static void main(String args[]){
-		// Stm prog = (instancia do programa);
-		// interpstp(prog);
+		
+		// Programa teste 1: "a = 10 + 20";
+		//Stm prog = new AssignStm("a",new OpExp(new NumExp(10), new NumExp(20), OpExp.plus));
+		Stm prog
+		
+		Interpreter i = new Interpreter();
+		Table t = i.interpStm(prog, null);
+		i.printTable(t);
 		
 		System.out.println("Yo mon");
+	}
+	
+	public void printTable (Table t){
+		if (t != null)
+		{
+			System.out.println(t.id + " -> " + t.val);
+			printTable(t.tail);
+		}
 	}
 	
 	// Adiciona o elemento novo como cabeça da lista anterior.
@@ -75,12 +89,13 @@ public class Interpreter {
 		// Retorna tabela depois das alterações de estados causados pelo Statement.
 		return tt;
 	}
+	
 	public IntAndTable interpExp( Exp e, Table t ){
-		IntAndTable res;
+		IntAndTable res = new IntAndTable(0, t);
 		
 		// A partir de um identificador, encontrar seu valor na tabela t.
 		if( e instanceof IdExp ) {
-			
+			res = new IntAndTable(lookup(t, ((IdExp) e).id), t);
 		}
 		
 		// Um número. Seu valor já é o retorno.
@@ -91,13 +106,45 @@ public class Interpreter {
 		// Operação matemática. *,+,-,/
 		// Retorna o valor resultado da expressão.
 		else if( e instanceof OpExp){
-			//completar
+			// Recebe o resultado da operação.
+			int temp;
+			// Interpreta a 1º expressão.
+			// Altera o estado do programa.
+			IntAndTable op1=interpExp(((OpExp) e).left, t);
+			// Interpreta a 2º expressão.
+			// Recebe a tabela resultante da execução da 1º expressão como entrada.
+			IntAndTable op2=interpExp(((OpExp) e).right, op1.t);
+			// Analisar qual o operador e executar uma operação diferente para cada um.
+			switch(((OpExp) e).operador){
+			case 1:
+				// Plus
+				temp = op1.i + op2.i;
+				break;
+			case 2:
+				// Minus
+				temp = op1.i - op2.i;
+				break;
+			case 3:
+				// Times
+				temp = op1.i * op2.i;
+				break;
+			case 4:
+				// Div
+				temp = op1.i / op2.i;
+				break;
+			default:
+				temp = 0;
+				break;
+			}
+				
+			res = new IntAndTable(temp, op2.t);
 		}
 		
 		// Executa um statement antes de calcular a expressão interna.
 		// Retorna o valor da expressão interna após o statement.
 		else if( e instanceof EseqExp){
-			//completar
+			Table tt = interpStm(((EseqExp) e).stm, t);
+			res = interpExp(((EseqExp) e).exp, tt);
 		}		
 		
 		return res; //provisório
