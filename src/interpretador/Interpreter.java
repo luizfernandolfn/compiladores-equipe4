@@ -17,11 +17,20 @@ public class Interpreter {
 	
 	public static void main(String args[]){
 		
-		// Programa teste 1: "a = 10 + 20";
-		//Stm prog = new AssignStm("a",new OpExp(new NumExp(10), new NumExp(20), OpExp.plus));
-		Stm prog = new CompoundStm(new AssignStm( "a", new OpExp( new NumExp(2), new NumExp(3), OpExp.plus ) ),
-				new AssignStm("b", new OpExp( new IdExp("a"), new IdExp("a"), OpExp.times)));
+		/*Stm prog = new AssignStm("a",new OpExp(new NumExp(10), OpExp.plus, new NumExp(20)));//*/
+		//Stm prog = new CompoundStm(new AssignStm( "a", new OpExp( new NumExp(2), new NumExp(3), OpExp.plus ) ), new AssignStm("b", new OpExp( new IdExp("a"), new IdExp("a"), OpExp.times)));
+		//Stm prog = new CompoundStm(new AssignStm("a", new NumExp(2)), new AssignStm("a", new OpExp(new IdExp("a"), new NumExp(10), OpExp.times)));
+		Stm prog = new CompoundStm(new AssignStm("a",
+										new OpExp(new NumExp(5), OpExp.plus, new NumExp(3))),
+				   new CompoundStm(new AssignStm("b",
+						   new EseqExp(new PrintStm(new PairExpList(new IdExp("a"),
+								   new LastExpList(new OpExp(new IdExp("a"),
+										   		OpExp.minus, new NumExp(1))))),
+						new OpExp(new NumExp(10), OpExp.times,
+								new IdExp("a")))),
+					new PrintStm(new LastExpList(new IdExp("b")))));//*/
 		
+		System.out.println("Program Output:");
 		Interpreter i = new Interpreter();
 		Table t = i.interpStm(prog, null);
 		
@@ -39,10 +48,11 @@ public class Interpreter {
 		}
 	}
 	
+	// Função de teste. Imprime a arvore na forma de um programa de uma linha só.
 	public void printTree (Stm s){
 		if( s instanceof CompoundStm ){
 			printTree (((CompoundStm) s).stm1);
-			System.out.print(";\n");
+			System.out.print(" ; ");
 			printTree (((CompoundStm) s).stm2);
 		}
 		else if( s instanceof AssignStm ){
@@ -50,11 +60,25 @@ public class Interpreter {
 			printTree(((AssignStm) s).exp);
 		}
 		else if( s instanceof PrintStm ){
-			System.out.print("Print(bla)");
+			System.out.print("Print(");
+			printTree(((PrintStm) s).list);
+			System.out.print(")");
 			/*TODO print not working*/
 		}
 	}
 	
+	//Função de teste. Imprime a arvore na forma de um programa de uma linha só.
+	public void printTree (ExpList l){
+		if ( l instanceof PairExpList ){
+			printTree(((PairExpList) l).head);
+			System.out.print(" , ");
+			printTree(((PairExpList) l).list);
+		}else if(l instanceof LastExpList ){
+			printTree(((LastExpList) l).head);
+		}
+	}
+	
+	//Função de teste. Imprime a arvore na forma de um programa de uma linha só.
 	public void printTree (Exp e){		
 		if( e instanceof IdExp ) {
 			System.out.print(((IdExp) e).id);
@@ -128,6 +152,19 @@ public class Interpreter {
 		}
 	}
 
+	public Table printExpList(ExpList l, Table t){
+		if(l instanceof LastExpList ){
+			IntAndTable iat = interpExp(((LastExpList) l).head,t);
+			System.out.print(iat.i);
+			return iat.t;
+		}else if(l instanceof PairExpList ){
+			IntAndTable iat = interpExp(((PairExpList) l).head,t);
+			System.out.print(iat.i + ", ");
+			return printExpList(((PairExpList) l).list, iat.t);
+		}
+		return null;
+	}
+	
 	// Recebe uma tabela no estado t1 como entrada
 	// Interpreta o Statement "s", e retorna uma tabela t2 após a execução.
 	public Table interpStm (Stm s, Table t){
@@ -149,7 +186,10 @@ public class Interpreter {
 		
 		// Imprime uma lista de expressões.
 		else if( s instanceof PrintStm ){
-			//fazer depois, imprime statement.
+			System.out.print("[ ");
+			Table ttt = printExpList(((PrintStm) s).list,t);
+			System.out.print(" ]\n");
+			tt = ttt;
 		}
 		
 		// Retorna tabela depois das alterações de estados causados pelo Statement.
