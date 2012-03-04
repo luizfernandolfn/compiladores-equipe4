@@ -1,5 +1,5 @@
 package compiler.tree;
 
-public class EEXP {
+public class EXPE {
 
 }
