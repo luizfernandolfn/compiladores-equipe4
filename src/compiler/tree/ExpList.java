@@ -1,5 +1,5 @@
 package compiler.tree;
 
-public class EXP {
+public class ExpList {
 
 }
