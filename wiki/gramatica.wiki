@@ -18,7 +18,6 @@ Statement	::=	"{" ( Statement )* "}"
 |	"System.out.println" "(" Expression ")" ";"
 |	Identifier "=" Expression ";"
 |	Identifier "[" Expression "]" "=" Expression ";"
-}}}
 Expression	::=	Expression ( "&&" | "<" | "+" | "-" | "*" ) Expression
 |	Expression "[" Expression "]"
 |	Expression "." "length"
@@ -33,3 +32,4 @@ Expression	::=	Expression ( "&&" | "<" | "+" | "-" | "*" ) Expression
 |	"!" Expression
 |	"(" Expression ")"
 Identifier	::=	<IDENTIFIER>
+}}}
