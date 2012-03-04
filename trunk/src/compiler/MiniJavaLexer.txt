@@ -1,0 +1,48 @@
+// JavaCC Options.
+
+options {
+  JAVA_UNICODE_ESCAPE = true;
+}
+
+// Parser Class.
+
+PARSER_BEGIN(MiniJavaParser)
+  public class MiniJavaParser {}
+PARSER_END(MiniJavaParser)
+
+
+// Lexical Analysis.
+
+TOKEN: {
+	  < IF : "if" >
+	| < #DIGIT: ["0"-"9"] >
+	| < #CHARACTER: ["a"-"z"]|["A"-"Z"] >
+	| < ID: ["a"-"z"](["a"-"z"]|<DIGIT>)* >
+	| < NUM: (<DIGIT>)+ >
+	| < REAL: ( (<DIGIT>)+ "." (<DIGIT>)* ) | ((<DIGIT>)* "." (<DIGIT>)+) >
+}
+
+
+// The following is a simple grammar that will allow you
+// to test the generated lexer.
+
+
+void Goal() :
+{}
+{
+  ( MiniJavaToken() )*
+  <EOF>
+}
+
+void MiniJavaToken():
+{}
+{
+  "class"  |  <IDENTIFIER> | "{" | "public" | "static" | "void" |
+  "main" | "(" | "String"  | "[" | "]" | ")" | "}" | "extends" | ";"
+  | "return" | "," | "int" | "boolean" | "=" | "if" | "else" | "while"
+  | "System.out.println" | "&&" | "<" | "+" | "-" | "*" | "." |
+  "length" | <INTEGER_LITERAL> | "true" | "false" | "this" | "new" |
+  "!"
+}
+
+
