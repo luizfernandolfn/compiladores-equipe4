@@ -4,9 +4,9 @@ package interpreter;
  * Trabalho de Compiladores
  * 
  * Equipe:							- Matricula
- * 	Henrique Siqueira Araújo 		- XXXXXXX
+ * 	Henrique Siqueira Araújo 		- 0301390
  * 	Ricardo Bustamante de Queiroz 	- 0301383
- * 	Romulo Gadelha Lima 			- XXXXXXX
+ * 	Romulo Gadelha Lima 			- 0309279
  * 	Vanessa Karla da Silva Oliveira - 0315257
  */
 
