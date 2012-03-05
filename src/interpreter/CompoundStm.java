@@ -1,4 +1,4 @@
-package chapter1_interpreter;
+package interpreter;
 
 //Composto Stm
 //uma afirmação composta de duas afirmações

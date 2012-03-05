@@ -1,4 +1,4 @@
-package chapter1_interpreter;
+package interpreter;
 
 //par
 //recebe uma expressão e uma lista de expressões

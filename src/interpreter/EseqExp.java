@@ -1,4 +1,4 @@
-package chapter1_interpreter;
+package interpreter;
 
 //executa um Stm e depois realiza uma expressão
 public class EseqExp extends Exp {

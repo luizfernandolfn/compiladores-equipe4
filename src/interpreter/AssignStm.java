@@ -1,4 +1,4 @@
-package chapter1_interpreter;
+package interpreter;
 
 //Atribuição
 //atribui a uma variável o resultado de uma expressão

@@ -1,4 +1,4 @@
-package chapter1_interpreter;
+package interpreter;
 
 //número
 //recebe um valor e o atribui a uma variável

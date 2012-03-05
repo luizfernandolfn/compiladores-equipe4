@@ -1,4 +1,4 @@
-package chapter1_interpreter;
+package interpreter;
 
 //suporte
 //serve para que a função InterpExp possa retornar um inteiro e o estado(table)
