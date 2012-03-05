@@ -1,4 +1,4 @@
-package chapter1_interpreter;
+package interpreter;
 
 public class Table {
 	public String id;

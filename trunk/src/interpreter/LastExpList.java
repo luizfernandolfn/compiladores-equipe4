@@ -1,4 +1,4 @@
-package chapter1_interpreter;
+package interpreter;
 
 //última expressão da lista
 public class LastExpList extends ExpList {

@@ -1,4 +1,4 @@
-package chapter1_interpreter;
+package interpreter;
 
 //Imprimir
 //recebe uma lista de expressões
