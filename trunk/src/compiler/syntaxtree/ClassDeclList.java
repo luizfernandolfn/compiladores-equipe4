@@ -3,7 +3,7 @@ package compiler.syntaxtree;
 import java.util.Vector;
 
 public class ClassDeclList {
-	private Vector<E> list;
+	private Vector list;
 
 	public ClassDeclList() {
 		list = new Vector();
