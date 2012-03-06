@@ -1,5 +1,9 @@
 package compiler.syntaxtree;
 
-public class Exp {
+import compiler.visitor.TypeVisitor;
+import compiler.visitor.Visitor;
 
+public abstract class Exp {
+	public abstract void accept(Visitor v);
+	public abstract Type accept(TypeVisitor v);
 }
