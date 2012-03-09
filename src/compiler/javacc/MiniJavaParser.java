@@ -4,6 +4,8 @@
 
 // The following is a simple grammar that will allow you
 // to test the generated lexer.
+
+// Grammar.
   static final public void Goal() throws ParseException {
     MainClass();
     jj_consume_token(0);
@@ -12,8 +14,51 @@
   static final public void MainClass() throws ParseException {
     jj_consume_token(CLASS);
     jj_consume_token(ID);
-    jj_consume_token(14);
-    jj_consume_token(15);
+    jj_consume_token(22);
+    jj_consume_token(PUBLIC);
+    jj_consume_token(STATIC);
+    jj_consume_token(VOID);
+    jj_consume_token(MAIN);
+    jj_consume_token(23);
+    jj_consume_token(STRING);
+    jj_consume_token(24);
+    jj_consume_token(25);
+    Identifier();
+    jj_consume_token(26);
+    jj_consume_token(22);
+    Statement();
+    jj_consume_token(27);
+    jj_consume_token(27);
+  }
+
+  static final public void ClassDeclaration() throws ParseException {
+    jj_consume_token(CLASS);
+  }
+
+  static final public void VarDeclaration() throws ParseException {
+    Type();
+    Identifier();
+    jj_consume_token(28);
+  }
+
+  static final public void MethodDeclaration() throws ParseException {
+    jj_consume_token(PUBLIC);
+  }
+
+  static final public void Type() throws ParseException {
+    jj_consume_token(INT);
+  }
+
+  static final public void Statement() throws ParseException {
+    jj_consume_token(22);
+  }
+
+  static final public void Expression() throws ParseException {
+    jj_consume_token(TRUE);
+  }
+
+  static final public void Identifier() throws ParseException {
+    jj_consume_token(ID);
   }
 
   static private boolean jj_initialized_once = false;
@@ -170,7 +215,7 @@
   /** Generate ParseException. */
   static public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[16];
+    boolean[] la1tokens = new boolean[29];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -184,7 +229,7 @@
         }
       }
     }
-    for (int i = 0; i < 16; i++) {
+    for (int i = 0; i < 29; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
