@@ -7,6 +7,7 @@ options {
 // Parser Class.
 
 PARSER_BEGIN(MiniJavaParser)
+  package compiler.javacc;
   public class MiniJavaParser {}
 PARSER_END(MiniJavaParser)
 
@@ -14,17 +15,22 @@ PARSER_END(MiniJavaParser)
 // Lexical Analysis.
 
 TOKEN: {
-	  < IF : "if" >
+	  < CLASS: "class" >
+	| < WHILE: "while" >  
+	
+	| < IF : "if" >
+	
 	| < #DIGIT: ["0"-"9"] >
 	| < #CHARACTER: (["a"-"z"]|["A"-"Z"]) >
 	| < ID: <CHARACTER>(<CHARACTER>|<DIGIT>)* >
 	| < NUM: (<DIGIT>)+ >
 	| < REAL: ( (<DIGIT>)+ "." (<DIGIT>)* ) | ((<DIGIT>)* "." (<DIGIT>)+ ) >
+	| < INTEGER_LITERAL: (<NUM>) >
 }
 
 SKIP: {
 	  < "--" (<CHARACTER>)* ("\n" | "\r" | "\r\n") >
-	|""
+	|" "
 	|"\t"
 	|"\n"
 }
@@ -32,23 +38,82 @@ SKIP: {
 // The following is a simple grammar that will allow you
 // to test the generated lexer.
 
-
 void Goal() :
 {}
 {
-  ( MiniJavaToken() )*
-  <EOF>
+	MainClass()
+	// ( ClassDeclaration() )*
+	<EOF>
 }
 
-void MiniJavaToken():
+void MainClass() :
 {}
 {
-  "class"  |  <ID> | "{" | "public" | "static" | "void" |
-  "main" | "(" | "String"  | "[" | "]" | ")" | "}" | "extends" | ";"
-  | "return" | "," | "int" | "boolean" | "=" | "if" | "else" | "while"
-  | "System.out.println" | "&&" | "<" | "+" | "-" | "*" | "." |
-  "length" | <NUM> | <REAL> | "true" | "false" | "this" | "new" |
-  "!"
+	"class" <ID> "{"
+	//"public" "static" "void" "main" "(" "String" "[" "]" Identifier() ")"
+	//"{" Statement() "}"
+	"}"
+}
+/*
+void ClassDeclaration() :
+{}
+	"class" Identifier() ( "extends" Identifier() )? "{"
+	( VarDeclaration() )* ( MethodDeclaration() )* "}"
 }
 
+void VarDeclaration():
+{}
+{
+	Type() Identifier() ";"
+}
 
+void MethodDeclaration():
+{}
+{
+	"public" Type() Identifier() "(" ( Type Identifier() ( "," Type() Identifier() )* ")" "{"
+	( VarDeclaration() )* ( Statement() )* "return" Expression() ";" "}"
+}
+
+void Type():
+{}
+{
+	  "int" "[" "]"
+	| "boolean"
+	| "int"
+	| Identifier()
+}
+
+void Statement():
+{}
+{
+	  "{" ( Statement() )* "}"
+	| "if" "(" Expression() ")" Statement() "else" Statement()
+	| "while" "(" Expression() ")" Statement()
+	| "System.out.println" "(" Expression() ")" ";"
+	| Identifier() "=" Expression() ";"
+	| Identifier() "[" Expression() "]" "=" Expression() ";"
+}
+
+void Expression():
+{}
+{
+	  Expression() ( "&&" | "<" | "+" | "-" | "*" ) Expression() 
+	| Expression() "[" Expression() "]"
+	| Expression() "." "length"
+	| Expression() "." Identifier() "(" (Expression() ( "," Expression() )* )? ")"
+	| <INTEGER_LITERAL>
+	| "true"
+	| "false"
+	| Identifier()
+	| "this"
+	| "new" "int" "[" Expression() "]"
+	| "new" Identifier() "(" ")"
+	| "!" Expression()
+	| "(" Expression() ")"
+}
+
+void Identifier():
+{}
+{
+	<IDENTIFIER>
+}*/
