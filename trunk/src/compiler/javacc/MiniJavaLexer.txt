@@ -22,6 +22,7 @@ TOKEN: {
 	| < VOID: "void" >
 	| < MAIN: "main" >   
 	| < EXTENDS: "extends" >
+	| < RETURN: "return" >
 	
 	| < STRING: "String" >
 	| < INT: "int" > 
@@ -30,6 +31,7 @@ TOKEN: {
 	| < FALSE: "false" >
 	
 	| < IF : "if" >
+	| < ELSE : "else" >
 	
 	| < #DIGIT: ["0"-"9"] >
 	| < #CHARACTER: (["a"-"z"]) >
@@ -72,7 +74,7 @@ void ClassDeclaration() :
 {}
 {
 	"class" Identifier() ( "extends" Identifier() )? "{"
-	( VarDeclaration() )* ( MethodDeclaration() )* "}"*/
+	( VarDeclaration() )* ( MethodDeclaration() )* "}"
 }
 
 void VarDeclaration():
@@ -84,8 +86,8 @@ void VarDeclaration():
 void MethodDeclaration():
 {}
 {
-	"public" /*Type() Identifier() "(" Type() Identifier() ( "," Type() Identifier() )* ")" "{"
-	( VarDeclaration() )* ( Statement() )* "return" Expression() ";" "}"*/
+	"public" Type() Identifier() "(" Type() Identifier() ( "," Type() Identifier() )* ")" "{"
+	( VarDeclaration() )* ( Statement() )* "return" Expression() ";" "}"
 }
 
 void Type():
@@ -100,12 +102,12 @@ void Type():
 void Statement():
 {}
 {
-	  "{"/* ( Statement() )* "}"
+	  "{" ( Statement() )* "}"
 	| "if" "(" Expression() ")" Statement() "else" Statement()
 	| "while" "(" Expression() ")" Statement()
 	| "System.out.println" "(" Expression() ")" ";"
-	| Identifier() "=" Expression() ";"
-	| Identifier() "[" Expression() "]" "=" Expression() ";"*/
+	| LOOKAHEAD(2) Identifier() "=" Expression() ";"
+	| Identifier() "[" Expression() "]" "=" Expression() ";"
 }
 
 void Expression():
