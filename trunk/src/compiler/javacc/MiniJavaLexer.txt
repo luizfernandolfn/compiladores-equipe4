@@ -24,6 +24,10 @@ TOKEN: {
 	| < EXTENDS: "extends" >
 	| < RETURN: "return" >
 	
+	| < NEW: "new" >
+	| < THIS: "this" >
+	| < LENGTH: "length" >
+	
 	| < STRING: "String" >
 	| < INT: "int" > 
 	
@@ -113,20 +117,25 @@ void Statement():
 void Expression():
 {}
 {
-	"true"
-	  /*Expression() ( "&&" | "<" | "+" | "-" | "*" ) Expression() 
-	| Expression() "[" Expression() "]"
-	| Expression() "." "length"
-	| Expression() "." Identifier() "(" (Expression() ( "," Expression() )* )? ")"
-	| <INTEGER_LITERAL>
+	  LOOKAHEAD(1) NonRecExpression() ( "&&" | "<" | "+" | "-" | "*" ) Expression() 
+	| LOOKAHEAD(1) NonRecExpression() "[" Expression() "]"
+	| LOOKAHEAD(2) NonRecExpression() "." "length"
+	| LOOKAHEAD(1) NonRecExpression() "." Identifier() "(" (Expression() ( "," Expression() )* )? ")"
+	| LOOKAHEAD(1) "new" "int" "[" Expression() "]"
+	| "!" Expression()
+	| "(" Expression() ")"
+	| NonRecExpression()
+}
+
+void NonRecExpression():
+{}
+{
+	  <INTEGER_LITERAL>
 	| "true"
 	| "false"
 	| Identifier()
 	| "this"
-	| "new" "int" "[" Expression() "]"
 	| "new" Identifier() "(" ")"
-	| "!" Expression()
-	| "(" Expression() ")"*/
 }
 
 void Identifier():
