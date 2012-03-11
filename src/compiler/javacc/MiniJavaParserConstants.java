@@ -27,29 +27,35 @@ public interface MiniJavaParserConstants {
   /** RegularExpression Id. */
   int RETURN = 8;
   /** RegularExpression Id. */
-  int STRING = 9;
+  int NEW = 9;
   /** RegularExpression Id. */
-  int INT = 10;
+  int THIS = 10;
   /** RegularExpression Id. */
-  int TRUE = 11;
+  int LENGTH = 11;
   /** RegularExpression Id. */
-  int FALSE = 12;
+  int STRING = 12;
   /** RegularExpression Id. */
-  int IF = 13;
+  int INT = 13;
   /** RegularExpression Id. */
-  int ELSE = 14;
+  int TRUE = 14;
   /** RegularExpression Id. */
-  int DIGIT = 15;
+  int FALSE = 15;
   /** RegularExpression Id. */
-  int CHARACTER = 16;
+  int IF = 16;
   /** RegularExpression Id. */
-  int ID = 17;
+  int ELSE = 17;
   /** RegularExpression Id. */
-  int NUM = 18;
+  int DIGIT = 18;
   /** RegularExpression Id. */
-  int REAL = 19;
+  int CHARACTER = 19;
   /** RegularExpression Id. */
-  int INTEGER_LITERAL = 20;
+  int ID = 20;
+  /** RegularExpression Id. */
+  int NUM = 21;
+  /** RegularExpression Id. */
+  int REAL = 22;
+  /** RegularExpression Id. */
+  int INTEGER_LITERAL = 23;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -65,6 +71,9 @@ public interface MiniJavaParserConstants {
     "\"main\"",
     "\"extends\"",
     "\"return\"",
+    "\"new\"",
+    "\"this\"",
+    "\"length\"",
     "\"String\"",
     "\"int\"",
     "\"true\"",
@@ -77,7 +86,7 @@ public interface MiniJavaParserConstants {
     "<NUM>",
     "<REAL>",
     "<INTEGER_LITERAL>",
-    "<token of kind 21>",
+    "<token of kind 24>",
     "\" \"",
     "\"\\t\"",
     "\"\\n\"",
@@ -91,6 +100,13 @@ public interface MiniJavaParserConstants {
     "\",\"",
     "\"System.out.println\"",
     "\"=\"",
+    "\"&&\"",
+    "\"<\"",
+    "\"+\"",
+    "\"-\"",
+    "\"*\"",
+    "\".\"",
+    "\"!\"",
   };
 
 }
