@@ -61,14 +61,14 @@ void Goal() :
 {}
 {
 	MainClass()
-	// ( ClassDeclaration() )*
+	( ClassDeclaration() )*
 	<EOF>
 }
 
 void MainClass() :
 {}
 {
-	"class" <ID> "{"
+	"class" Identifier() "{"
 	"public" "static" "void" "main" "(" "String" "[" "]" Identifier() ")"
 	"{" Statement() "}"
 	"}"
@@ -114,28 +114,28 @@ void Statement():
 	| Identifier() "[" Expression() "]" "=" Expression() ";"
 }
 
+void ExpressionTerminal():
+{}
+{
+	  "true"
+	| "false"
+	| "this"
+	| Identifier()
+	| "new" Identifier() "(" ")"
+	| <INTEGER_LITERAL>
+}
+
 void Expression():
 {}
 {
-	  LOOKAHEAD(1) NonRecExpression() ( "&&" | "<" | "+" | "-" | "*" ) Expression() 
-	| LOOKAHEAD(1) NonRecExpression() "[" Expression() "]"
-	| LOOKAHEAD(2) NonRecExpression() "." "length"
-	| LOOKAHEAD(1) NonRecExpression() "." Identifier() "(" (Expression() ( "," Expression() )* )? ")"
+	  LOOKAHEAD(1) Expression() ( "&&" | "<" | "+" | "-" | "*" ) Expression() 
+	| LOOKAHEAD(1) Expression() "[" Expression() "]"
+	| LOOKAHEAD(2) Expression() "." "length"
+	| LOOKAHEAD(1) Expression() "." Identifier() "(" (Expression() ( "," Expression() )* )? ")"
 	| LOOKAHEAD(1) "new" "int" "[" Expression() "]"
 	| "!" Expression()
 	| "(" Expression() ")"
-	| NonRecExpression()
-}
-
-void NonRecExpression():
-{}
-{
-	  <INTEGER_LITERAL>
-	| "true"
-	| "false"
-	| Identifier()
-	| "this"
-	| "new" Identifier() "(" ")"
+	| ExpressionTerminal()
 }
 
 void Identifier():
