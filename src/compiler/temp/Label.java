@@ -1,6 +1,6 @@
 package compiler.temp;
 
-import Symbol.Symbol;
+import compiler.symbol.Symbol;
 
 /**
  * A Label represents an address in assembly language.
