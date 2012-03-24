@@ -1,5 +1,5 @@
 package compiler.temp;
 
-public class TempMap {
-
+public interface TempMap {
+	public String tempMap(Temp t);
 }
