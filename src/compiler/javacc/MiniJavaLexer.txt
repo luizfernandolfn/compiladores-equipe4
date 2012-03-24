@@ -114,17 +114,6 @@ void Statement():
 	| Identifier() "[" Expression() "]" "=" Expression() ";"
 }
 
-void ExpressionTerminal():
-{}
-{
-	  "true"
-	| "false"
-	| "this"
-	| Identifier()
-	| "new" Identifier() "(" ")"
-	| <INTEGER_LITERAL>
-}
-
 void Expression():
 {}
 {
@@ -135,7 +124,17 @@ void Expression():
 	| LOOKAHEAD(1) "new" "int" "[" Expression() "]"
 	| "!" Expression()
 	| "(" Expression() ")"
-	| ExpressionTerminal()
+	| "true"
+	| "false"
+	| "this"
+	| Identifier()
+	| "new" Identifier() "(" ")"
+	| <INTEGER_LITERAL>
+}
+
+void ExpressionRec():
+{
+	
 }
 
 void Identifier():
