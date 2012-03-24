@@ -24,12 +24,20 @@ TOKEN: {
 	| < EXTENDS: "extends" >
 	| < RETURN: "return" >
 	
+	| < OPNOT: "!" >
+	| < OPAND: "&&" >
+	| < OPLT: "<" >
+	| < OPPLUS: "+" >
+	| < OPMINUS: "-" >
+	| < OPTIMES: "*" >
+	
 	| < NEW: "new" >
 	| < THIS: "this" >
 	| < LENGTH: "length" >
 	
 	| < STRING: "String" >
 	| < INT: "int" > 
+	| < BOOLEAN: "boolean" >
 	
 	| < TRUE: "true" >
 	| < FALSE: "false" >
@@ -70,8 +78,8 @@ void MainClass() :
 {
 	"class" Identifier() "{"
 	"public" "static" "void" "main" "(" "String" "[" "]" Identifier() ")"
-	"{" Statement() "}"
-	"}"
+"{" Statement() "}"
+"}"
 }
 
 void ClassDeclaration() :
@@ -90,19 +98,21 @@ void VarDeclaration():
 void MethodDeclaration():
 {}
 {
-	"public" Type() Identifier() "(" Type() Identifier() ( "," Type() Identifier() )* ")" "{"
-	( VarDeclaration() )* ( Statement() )* "return" Expression() ";" "}"
+	"public" Type() Identifier() "(" 
+(Type() Identifier() ( "," Type() Identifier() )*)?
+")" "{"
+		( LOOKAHEAD(2) VarDeclaration() )* ( Statement() )* "return" Expression() ";"
+"}"
 }
 
 void Type():
 {}
 {
-	  "int" /*"[" "]"
+	  LOOKAHEAD(2) "int" "[" "]"
 	| "boolean"
 	| "int"
-	| Identifier()*/
+	| Identifier()
 }
-
 void Statement():
 {}
 {
@@ -114,31 +124,37 @@ void Statement():
 	| Identifier() "[" Expression() "]" "=" Expression() ";"
 }
 
-void Expression():
-{}
-{
-	  LOOKAHEAD(1) Expression() ( "&&" | "<" | "+" | "-" | "*" ) Expression() 
-	| LOOKAHEAD(1) Expression() "[" Expression() "]"
-	| LOOKAHEAD(2) Expression() "." "length"
-	| LOOKAHEAD(1) Expression() "." Identifier() "(" (Expression() ( "," Expression() )* )? ")"
-	| LOOKAHEAD(1) "new" "int" "[" Expression() "]"
-	| "!" Expression()
-	| "(" Expression() ")"
-	| "true"
-	| "false"
-	| "this"
-	| Identifier()
-	| "new" Identifier() "(" ")"
-	| <INTEGER_LITERAL>
-}
-
-void ExpressionRec():
-{
-	
-}
-
 void Identifier():
 {}
 {
 	<ID>
+}
+
+void Expression():
+{}
+{
+	  ExpressionPrim() (ExpressionTerm())*
+	| "!" Expression()
+}
+
+void ExpressionPrim():
+{}
+{
+	  "true"
+	| "false"
+	| <INTEGER_LITERAL>
+	| Identifier()
+	| "this"
+	| LOOKAHEAD(2) "new" Identifier()
+	| "new" "int" "[" Expression() "]"
+	| "(" Expression() ")"
+}
+
+void ExpressionTerm():
+{}
+{
+	  ( "&&" | "<" | "+" | "-" | "*" ) ExpressionPrim()
+	| "[" Expression() "]"
+	| LOOKAHEAD(2) "." "length"
+	| "." Identifier() "(" (Expression() ("," Expression())*)? ")"
 }
