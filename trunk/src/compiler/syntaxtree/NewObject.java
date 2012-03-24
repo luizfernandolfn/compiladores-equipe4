@@ -7,7 +7,7 @@ public class NewObject extends Exp {
 	public Identifier i;
 
 	public NewObject(Identifier ai) {
-		i=ai;
+		i = ai;
 	}
 
 	public void accept(Visitor v) {

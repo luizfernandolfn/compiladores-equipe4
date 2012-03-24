@@ -8,7 +8,8 @@ public class Program {
 	public ClassDeclList cl;
 
 	public Program(MainClass am, ClassDeclList acl) {
-		m=am; cl=acl; 
+		m = am;
+		cl = acl;
 	}
 
 	public void accept(Visitor v) {
