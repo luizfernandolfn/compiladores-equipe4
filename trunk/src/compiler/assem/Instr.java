@@ -1,7 +1,10 @@
 package compiler.assem;
 
+import compiler.temp.Label;
+import compiler.temp.LabelList;
 import compiler.temp.Temp;
 import compiler.temp.TempList;
+import compiler.temp.TempMap;
 
 public abstract class Instr {
 	public String assem;

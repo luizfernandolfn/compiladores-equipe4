@@ -65,7 +65,7 @@ public class Print {
 		prExp(s.src,d+1); say(")");
 	}
 
-	void prStm(EXP s, int d) {
+	void prStm(EXPE s, int d) {
 		indent(d); sayln("EXP("); prExp(s.exp,d+1); say(")"); 
 	}
 
