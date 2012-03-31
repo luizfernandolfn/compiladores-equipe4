@@ -1,0 +1,219 @@
+// JavaCC Options.
+
+options {
+  JAVA_UNICODE_ESCAPE = true;
+}
+
+// Parser Class.
+
+PARSER_BEGIN(MiniJavaParser)
+  package compiler.javacc;
+  public class MiniJavaParser {}
+PARSER_END(MiniJavaParser)
+
+
+// Lexical Analysis.
+
+TOKEN: {
+	  < CLASS: "class" >
+	| < WHILE: "while" >
+	| < PUBLIC: "public" >
+	| < STATIC: "static" >    
+	| < VOID: "void" >
+	| < MAIN: "main" >   
+	| < EXTENDS: "extends" >
+	| < RETURN: "return" >
+	
+	| < OPNOT: "!" >
+	| < OPAND: "&&" >
+	| < OPLT: "<" >
+	| < OPPLUS: "+" >
+	| < OPMINUS: "-" >
+	| < OPTIMES: "*" >
+	
+	| < NEW: "new" >
+	| < THIS: "this" >
+	| < LENGTH: "length" >
+	
+	| < STRING: "String" >
+	| < INT: "int" > 
+	| < BOOLEAN: "boolean" >
+	
+	| < TRUE: "true" >
+	| < FALSE: "false" >
+	
+	| < IF : "if" >
+	| < ELSE : "else" >
+	
+	| < #DIGIT: ["0"-"9"] >
+	| < #CHARACTER: (["a"-"z"]) >
+	| < ID: <CHARACTER>(<CHARACTER>|<DIGIT>)* >
+	| < NUM: (<DIGIT>)+ >
+	| < REAL: ( (<DIGIT>)+ "." (<DIGIT>)* ) | ((<DIGIT>)* "." (<DIGIT>)+ ) >
+	| < INTEGER_LITERAL: (<NUM>) >
+}
+
+SKIP: {
+	  < "--" (<CHARACTER>)* ("\n" | "\r" | "\r\n") >
+	|" "
+	|"\t"
+	|"\n"
+}
+
+// The following is a simple grammar that will allow you
+// to test the generated lexer.
+
+// Grammar.
+
+Program Goal() :
+{ Program p; MainClass mc; ClassDecl cd; ClassDeclList cl; }
+{
+	mc=MainClass()
+	( cd=ClassDeclaration() { cl.addElement(cd); } )*
+	<EOF> { p= new Program(mc,cl); return p; }
+}
+
+MainClass MainClass() :
+{ MainClass mc; Identifier ai1,ai2; Statement as; }
+{
+	"class" i1=Identifier() "{"
+	"public" "static" "void" "main" "(" "String" "[" "]" i2=Identifier() ")"
+"{" as=Statement() "}"
+"}" { mc = new MainClass(ai1, ai2, as); return mc; }
+}
+
+ClassDecl ClassDeclaration() :
+{ClassDecl cd; Boolean simple; Identifier ai, aj; 
+VarDeclList avl; MethodDeclList adl; VarDecl av; MethodDecl dl;}
+{
+	"class" ai=Identifier() { simple=true; }
+	( "extends" aj=Identifier() { simple=false; } )? 
+	"{"
+		 ( av=VarDeclaration() {avl.addElement(av);} )*
+		( dl=MethodDeclaration() {adl.addElement(dl);} )*
+	"}"
+	{
+	 	if(simple) cd = new ClassDeclSimple(ai,avl,adl);
+	 	else cd = new ClassDeclExtends(ai,aj,avl,adl);	 	return cd;
+ 	}
+}
+
+VarDecl VarDeclaration():
+{ VarDecl vd; Type at; Identifier ai; }
+{
+	at=Type() ai=Identifier() ";" { vd = new VarDecl(at,ai); return vd; }
+}
+
+Formal Formal():
+{ Formal fo; Type at; Identifier ai; }
+{
+at=Type() ai=Identifier()
+{ fo = new Formal(at,ai); return fo; }
+}
+
+FormalList FormalList():
+{ FormalList fl; Formal af; }
+{
+( af=Formal() {fl.addElement(af);} ( "," af=Formal() {fl.addElement(af);} )*
+| {}
+) { return fl; }
+}
+
+MethodDecl MethodDeclaration():
+{ MethodDecl md; Type at; Identifier ai; FormalList afl; VarDeclList avl;
+  StatementList asl; Expression ae; VarDecl vd; Statement stm; }
+{
+	"public" at=Type() ai=Identifier() "(" afl=FormalList() ")" "{"
+	( LOOKAHEAD(2) vd=VarDeclaration() {avl.addElement(vd);} )*
+( stm=Statement() {asl.addElement(stm);} )*
+"return" ae=Expression() ";" "}"
+{ md = new MethodDecl(at,ai,afl,avl,asl,ae); return md; }
+}
+
+Type Type():
+{ Type t; }
+{
+	( LOOKAHEAD(2) "int" "[" "]" { t=new IntArrayType(); }
+	| "boolean" { t=new BooleanType(); }
+	| "int" { t=new IntegerType(); }
+	| Identifier() { t=new IdentifierType(); }
+	) { return t; }
+}
+Statement Statement():
+{ Statement stm; StatementList asl; Statement asi,asj;
+Identifier ai; Expression aei, aej; }
+{
+	( "{" ( asi=Statement() {asl.addElement(asi);} )* "}"
+{ stm = new Block(asl); }
+	| "if" "(" aei=Expression() ")" asi=Statement() "else" asj=Statement()
+{ stm = new If(aei,asi,asj); }
+	| "while" "(" aei=Expression() ")" asi=Statement()
+		{ stm = new While(aei,asi); }
+	| "System.out.println" "(" aei=Expression() ")" ";"
+		{ stm = new Print(aei); }
+	| LOOKAHEAD(2) ai=Identifier() "=" aei=Expression() ";"
+		{ stm = new Assign(ai,aei); }
+	| ai=Identifier() "[" aei=Expression() "]" "=" aej=Expression() ";"
+		{ stm = new ArrayAssign(ai, aei, aej); }
+	) { return stm; }
+}
+
+Identifier Identifier():
+{ Token t; Identifier id; }
+{
+	t=<ID> { id = new Identifier(t.image); }
+}
+
+ExpList ExpressionList():
+{ ExpList el; Expression ae; }
+{
+	(ae=Expression() {el.addElement(ae);}
+( "," ae=Expression() {el.addElement(ae);} )*)?
+{ return el; }
+}
+
+//******************
+
+Exp Expression():
+{}
+{
+ExpressionTerm()
+}
+
+Exp ExpressionTerm():
+{ Exp e1, e2; }
+{
+	e1 = ExpressionFactor()
+	( "+" e2=ExpressionFactor() { e1 = new Plus(e1,e2); }
+	| "-" e2=ExpressionFactor() { e1 = new Minus(e1,e2); }
+	)*
+{ return e1; }
+}
+
+Exp ExpressionFactor():
+{ Exp e1, e2; }
+{
+	e1=ExpressionEnd()
+	( "*" e2=ExpressionEnd() { e1 = new Plus(e1,e2); } )*
+	{ return e1; }
+}
+
+Exp ExpressionEnd():
+{}
+{
+	  ExpressionNotRec() ( "[" Expression() "]" | LOOKAHEAD(2) "." "length" | "." "(" ExpressionList() ")" | {} ) 
+}
+
+Exp ExpressionNotRec():
+{}
+{
+	  "(" Expression() ")"
+	| "true"
+	| "false"
+	| Identifier()
+	| "this"
+	| LOOKAHEAD(3) "new" "int" "[" Expression() "]"
+	| "new" "int" Identifier()
+	| "!" Expression()
+	| <INTEGER_LITERAL>
+}
