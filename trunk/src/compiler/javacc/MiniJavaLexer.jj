@@ -8,6 +8,7 @@ options {
 
 PARSER_BEGIN(MiniJavaParser)
   package compiler.javacc;
+  import compiler.syntaxtree.*;
   public class MiniJavaParser {}
 PARSER_END(MiniJavaParser)
 
@@ -66,7 +67,7 @@ SKIP: {
 // Grammar.
 
 Program Goal() :
-{ Program p; MainClass mc; ClassDecl cd; ClassDeclList cl; }
+{ Program p; MainClass mc; ClassDecl cd; ClassDeclList cl=new ClassDeclList(); }
 {
 	mc=MainClass()
 	( cd=ClassDeclaration() { cl.addElement(cd); } )*
@@ -76,15 +77,15 @@ Program Goal() :
 MainClass MainClass() :
 { MainClass mc; Identifier ai1,ai2; Statement as; }
 {
-	"class" i1=Identifier() "{"
-	"public" "static" "void" "main" "(" "String" "[" "]" i2=Identifier() ")"
+	"class" ai1=Identifier() "{"
+	"public" "static" "void" "main" "(" "String" "[" "]" ai2=Identifier() ")"
 "{" as=Statement() "}"
 "}" { mc = new MainClass(ai1, ai2, as); return mc; }
 }
 
 ClassDecl ClassDeclaration() :
-{ClassDecl cd; Boolean simple; Identifier ai, aj; 
-VarDeclList avl; MethodDeclList adl; VarDecl av; MethodDecl dl;}
+{ClassDecl cd; Boolean simple; Identifier ai, aj=Identifier(); 
+VarDeclList avl=new VarDeclList(); MethodDeclList adl=new MethodDeclList(); VarDecl av; MethodDecl dl;}
 {
 	"class" ai=Identifier() { simple=true; }
 	( "extends" aj=Identifier() { simple=false; } )? 
@@ -112,7 +113,7 @@ at=Type() ai=Identifier()
 }
 
 FormalList FormalList():
-{ FormalList fl; Formal af; }
+{ FormalList fl=new FormalList(); Formal af; }
 {
 ( af=Formal() {fl.addElement(af);} ( "," af=Formal() {fl.addElement(af);} )*
 | {}
@@ -120,8 +121,8 @@ FormalList FormalList():
 }
 
 MethodDecl MethodDeclaration():
-{ MethodDecl md; Type at; Identifier ai; FormalList afl; VarDeclList avl;
-  StatementList asl; Expression ae; VarDecl vd; Statement stm; }
+{ MethodDecl md; Type at; Identifier ai; FormalList afl=new FormalList(); VarDeclList avl=new VarDeclList();
+  StatementList asl=new StatementList(); Exp ae; VarDecl vd; Statement stm; }
 {
 	"public" at=Type() ai=Identifier() "(" afl=FormalList() ")" "{"
 	( LOOKAHEAD(2) vd=VarDeclaration() {avl.addElement(vd);} )*
@@ -131,17 +132,17 @@ MethodDecl MethodDeclaration():
 }
 
 Type Type():
-{ Type t; }
+{ Type t; Identifier id;}
 {
 	( LOOKAHEAD(2) "int" "[" "]" { t=new IntArrayType(); }
 	| "boolean" { t=new BooleanType(); }
 	| "int" { t=new IntegerType(); }
-	| Identifier() { t=new IdentifierType(); }
+	| id=Identifier() { t=new IdentifierType(id.s); }
 	) { return t; }
 }
 Statement Statement():
-{ Statement stm; StatementList asl; Statement asi,asj;
-Identifier ai; Expression aei, aej; }
+{ Statement stm; StatementList asl=new StatementList(); Statement asi,asj;
+Identifier ai; Exp aei, aej; }
 {
 	( "{" ( asi=Statement() {asl.addElement(asi);} )* "}"
 { stm = new Block(asl); }
@@ -162,10 +163,11 @@ Identifier Identifier():
 { Token t; Identifier id; }
 {
 	t=<ID> { id = new Identifier(t.image); }
+	{ return id; }
 }
 
 ExpList ExpressionList():
-{ ExpList el; Expression ae; }
+{ ExpList el=new ExpList(); Exp ae; }
 {
 	(ae=Expression() {el.addElement(ae);}
 ( "," ae=Expression() {el.addElement(ae);} )*)?
