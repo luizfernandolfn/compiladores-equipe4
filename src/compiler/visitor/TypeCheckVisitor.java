@@ -69,7 +69,18 @@ public class TypeCheckVisitor implements TypeVisitor {
 
 	@Override
 	public Type visit(VarDecl n) {
-		// TODO Auto-generated method stub
+		
+		/*Type t = n.t.accept(this);
+		String id = n.i.toString();
+		
+		if ( currMethod == null ) {
+			if ( !currClass.a) {
+				
+			}
+		}else if ( !currMethod) {
+			
+		}*/
+		
 		return null;
 	}
 
@@ -117,19 +128,37 @@ public class TypeCheckVisitor implements TypeVisitor {
 
 	@Override
 	public Type visit(If n) {
-		// TODO Auto-generated method stub
+		
+		if (! (n.e.accept(new TypeCheckExpVisitor()) instanceof BooleanType) ) {
+		       System.out.println("The condition of while must be"+
+		                          "of type boolean");
+		       System.exit(-1);
+		    }
+		
 		return null;
 	}
 
 	@Override
 	public Type visit(While n) {
-		// TODO Auto-generated method stub
+		
+		if (! (n.e.accept(new TypeCheckExpVisitor()) instanceof BooleanType) ) {
+		       System.out.println("The condition of while must be"+
+		                          "of type boolean");
+		       System.exit(-1);
+		    }
+		
 		return null;
 	}
 
 	@Override
 	public Type visit(Print n) {
-		// TODO Auto-generated method stub
+		
+		if (! (n.e.accept(new TypeCheckExpVisitor()) instanceof IntegerType) ) {
+		       System.out.println("The argument of System.out.println must be"+
+		                          " of type int");
+		       System.exit(-1);
+		    }
+		
 		return null;
 	}
 
@@ -176,11 +205,15 @@ public class TypeCheckVisitor implements TypeVisitor {
 	@Override
 	public Type visit(Plus n) {
 		
-		if ( !(n.e1.accept(this) instanceof IntegerType ) )
+		if ( !(n.e1.accept(this) instanceof IntegerType ) ){
 			System.out.println("Left side of Plus must be of type integer");
+			System.exit(-1);
+		}
 		
-		if ( !(n.e2.accept(this) instanceof IntegerType ) )
+		if ( !(n.e2.accept(this) instanceof IntegerType ) ){
 			System.out.println("Right side of Plus must be of type integer");
+			System.exit(-1);
+		}
 		
 		return new IntegerType();
 	}
@@ -188,11 +221,15 @@ public class TypeCheckVisitor implements TypeVisitor {
 	@Override
 	public Type visit(Minus n) {
 		
-		if ( !(n.e1.accept(this) instanceof IntegerType ) )
+		if ( !(n.e1.accept(this) instanceof IntegerType ) ){
 			System.out.println("Left side of Minus must be of type integer");
+			System.exit(-1);
+		}
 		
-		if ( !(n.e2.accept(this) instanceof IntegerType ) )
+		if ( !(n.e2.accept(this) instanceof IntegerType ) ){
 			System.out.println("Right side of Minus must be of type integer");
+			System.exit(-1);
+		}
 		
 		return new IntegerType();
 	}
@@ -200,11 +237,15 @@ public class TypeCheckVisitor implements TypeVisitor {
 	@Override
 	public Type visit(Times n) {
 		
-		if ( !(n.e1.accept(this) instanceof IntegerType ) )
+		if ( !(n.e1.accept(this) instanceof IntegerType ) ){
 			System.out.println("Left side of Times must be of type integer");
+			System.exit(-1);
+		}
 		
-		if ( !(n.e2.accept(this) instanceof IntegerType ) )
+		if ( !(n.e2.accept(this) instanceof IntegerType ) ){
 			System.out.println("Right side of Times must be of type integer");
+			System.exit(-1);
+		}
 		
 		return new IntegerType();
 	}
@@ -299,7 +340,7 @@ public class TypeCheckVisitor implements TypeVisitor {
 	@Override
 	public Type visit(Not n) {
 		if (! (n.e.accept(this) instanceof BooleanType) ) {
-		       System.out.println("Argument of ! must be of type Boolean");
+		       System.out.println("Argument of <!> must be of type Boolean");
 		       System.exit(-1);
 		    }
 		    return new BooleanType();
