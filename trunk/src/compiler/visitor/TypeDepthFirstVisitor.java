@@ -6,7 +6,6 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
 
 	// MainClass m;
 	// ClassDeclList cl;
-	
 	public Type visit(Program n) {
 		n.m.accept(this);
 		for (int i = 0; i < n.cl.size(); i++) {
