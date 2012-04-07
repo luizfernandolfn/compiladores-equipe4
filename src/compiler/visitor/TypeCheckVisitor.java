@@ -38,6 +38,11 @@ import compiler.syntaxtree.While;
 
 public class TypeCheckVisitor implements TypeVisitor {
 
+	public static Class currClass;
+    public static Method currMethod;
+    public static SymbolTable symbolTable;
+   
+	
 	@Override
 	public Type visit(Program n) {
 		// TODO Auto-generated method stub
