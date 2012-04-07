@@ -203,7 +203,7 @@ Exp ExpressionFactor():
 Exp ExpressionEnd():
 {}
 {
-	  ExpressionNotRec() ( "[" Expression() "]" | LOOKAHEAD(2) "." "length" | "." "(" ExpressionList() ")" | {} ) 
+	  ExpressionNotRec() /*( "[" Expression() "]" | LOOKAHEAD(2) "." "length" | "." "(" ExpressionList() ")" )*/ 
 }
 
 Exp ExpressionNotRec():
