@@ -142,98 +142,162 @@ public class TypeCheckVisitor implements TypeVisitor {
 
 	@Override
 	public Type visit(And n) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		if (! (n.e1.accept(this) instanceof BooleanType) ) {
+		    System.out.println("Left side of And must be of type integer");
+		    System.exit(-1);
+		}
+		if (! (n.e2.accept(this) instanceof BooleanType) ) {
+		    System.out.println("Right side of And must be of type integer");
+		    System.exit(-1);
+		}
+		return new BooleanType();
 	}
 
 	@Override
 	public Type visit(LessThan n) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		if (! (n.e1.accept(this) instanceof IntegerType) ) {
+		   System.out.println("Left side of LessThan must be of type integer");
+		   System.exit(-1);
+		}
+		if (! (n.e2.accept(this) instanceof IntegerType) ) {
+		   System.out.println("Right side of LessThan must be of type integer");
+		   System.exit(-1);
+		}
+		return new BooleanType();
 	}
 
 	@Override
 	public Type visit(Plus n) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		if ( !(n.e1.accept(this) instanceof IntegerType ) )
+			System.out.println("Left side of Plus must be of type integer");
+		
+		if ( !(n.e2.accept(this) instanceof IntegerType ) )
+			System.out.println("Right side of Plus must be of type integer");
+		
+		return new IntegerType();
 	}
 
 	@Override
 	public Type visit(Minus n) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		if ( !(n.e1.accept(this) instanceof IntegerType ) )
+			System.out.println("Left side of Minus must be of type integer");
+		
+		if ( !(n.e2.accept(this) instanceof IntegerType ) )
+			System.out.println("Right side of Minus must be of type integer");
+		
+		return new IntegerType();
 	}
 
 	@Override
 	public Type visit(Times n) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		if ( !(n.e1.accept(this) instanceof IntegerType ) )
+			System.out.println("Left side of Times must be of type integer");
+		
+		if ( !(n.e2.accept(this) instanceof IntegerType ) )
+			System.out.println("Right side of Times must be of type integer");
+		
+		return new IntegerType();
 	}
 
 	@Override
 	public Type visit(ArrayLookup n) {
-		// TODO Auto-generated method stub
-		return null;
+		if (! (n.e1.accept(this) instanceof IntArrayType) ) {
+	    }
+	    if (! (n.e2.accept(this) instanceof IntegerType) ) {
+	    }
+	    return new IntegerType();
 	}
 
 	@Override
 	public Type visit(ArrayLength n) {
-		// TODO Auto-generated method stub
-		return null;
+		if (! (n.e.accept(this) instanceof IntArrayType) ) {
+	    }
+	    return new IntegerType();
 	}
 
 	@Override
 	public Type visit(Call n) {
-		// TODO Auto-generated method stub
-		return null;
+		if (! (n.e.accept(this) instanceof IdentifierType)){
+			System.out.println("method "+ n.i.toString() 
+					   + "called  on something that is not a"+
+					   " class or Object.");
+			System.exit(-1);
+		    } 
+
+		    String mname = n.i.toString();    
+		    String cname = ((IdentifierType) n.e.accept(this)).s;
+
+		    Method calledMethod = TypeCheckVisitor.symbolTable.getMethod(mname,cname);
+		    
+		    for ( int i = 0; i < n.el.size(); i++ ) {     	
+			Type t1 =null;  
+			Type t2 =null;  
+
+			if (calledMethod.getParamAt(i)!=null)
+			    t1 = calledMethod.getParamAt(i).type();
+			t2 = n.el.elementAt(i).accept(this);
+			if (!TypeCheckVisitor.symbolTable.compareTypes(t1,t2)){
+			    System.out.println("Type Error in arguments passed to " +
+					       cname+"." +mname);
+			    System.exit(-1);  
+			}	    
+		    }
+
+		    return TypeCheckVisitor.symbolTable.getMethodType(mname,cname);
 	}
 
 	@Override
 	public Type visit(IntegerLiteral n) {
-		// TODO Auto-generated method stub
-		return null;
+		return new IntegerType();
 	}
 
 	@Override
 	public Type visit(True n) {
-		// TODO Auto-generated method stub
-		return null;
+		return new BooleanType();
 	}
 
 	@Override
 	public Type visit(False n) {
-		// TODO Auto-generated method stub
-		return null;
+		return new BooleanType();
 	}
 
 	@Override
 	public Type visit(IdentifierExp n) {
-		// TODO Auto-generated method stub
-		return null;
+		return TypeCheckVisitor.symbolTable.getVarType(TypeCheckVisitor.currMethod,
+			      TypeCheckVisitor.currClass,n.s);
 	}
 
 	@Override
 	public Type visit(This n) {
-		// TODO Auto-generated method stub
-		return null;
+		return TypeCheckVisitor.currClass.type();
 	}
 
 	@Override
 	public Type visit(NewArray n) {
-		// TODO Auto-generated method stub
-		return null;
+		if (! (n.e.accept(this) instanceof IntegerType) ) {
+		       System.out.println("An appropriate message");
+		       System.exit(-1);
+		    }
+		    return new IntArrayType();
 	}
 
 	@Override
 	public Type visit(NewObject n) {
-		// TODO Auto-generated method stub
-		return null;
+		return new IdentifierType(n.i.s);
 	}
 
 	@Override
 	public Type visit(Not n) {
-		// TODO Auto-generated method stub
-		return null;
+		if (! (n.e.accept(this) instanceof BooleanType) ) {
+		       System.out.println("Argument of ! must be of type Boolean");
+		       System.exit(-1);
+		    }
+		    return new BooleanType();
 	}
 
 	@Override
