@@ -38,7 +38,6 @@ public class Table {
 		if(first == beginScope){
 			stack.pop();
 		}
-
 	}
 
 	public Enumeration keys() {
