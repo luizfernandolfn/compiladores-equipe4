@@ -1,5 +1,6 @@
 package compiler.visitor;
 
+import compiler.symbol.Method;
 import compiler.syntaxtree.And;
 import compiler.syntaxtree.ArrayLength;
 import compiler.syntaxtree.ArrayLookup;
