@@ -110,8 +110,9 @@ public class TypeCheckStmExpVisitor extends TypeDepthFirstVisitor {
 	public Type visit(Call n) {
 
 	  if (! (n.e.accept(this) instanceof IdentifierType)){
-		  System.out.println("method "+ n.i.toString() + "called  on something that is not a"+
-				   " class or Object.");
+		  System.out.println("method "+ n.i.toString() + 
+				  "called  on something that is not a"+
+				  " class or Object.");
 		  System.exit(-1);
 	  } 
 

@@ -1,6 +1,8 @@
 package compiler.visitor;
 
 import java.lang.reflect.Method;
+
+import compiler.symbol.Table;
 import compiler.syntaxtree.ArrayAssign;
 import compiler.syntaxtree.Assign;
 import compiler.syntaxtree.BooleanType;
@@ -20,12 +22,12 @@ import compiler.syntaxtree.While;
 
 public class TypeCheckVisitor extends DepthFirstVisitor{
 
-	static Class currClass;
-    static Method currMethod;
-    static SymbolTable symbolTable;
+	public static Class currClass;
+    public static Method currMethod;
+    public static Table symbolTable;
    
-    public TypeCheckVisitor(SymbolTable s){
-    	symbolTable = s;
+    public TypeCheckVisitor( Table table ){
+    	symbolTable = table;
     }
 
     /*
@@ -183,7 +185,7 @@ public class TypeCheckVisitor extends DepthFirstVisitor{
     	Type t1 = symbolTable.getVarType(currMethod,currClass,n.i.toString());
     	Type t2 = n.e.accept(new TypeCheckStmExpVisitor() );
     	
-    	if (symbolTable.compareTypes(t1,t2)==false){
+    	if ( symbolTable.compareTypes(t1,t2) == false ){
     		System.out.println("Type error in assignment to "+n.i.toString());	
     		System.exit(0);
     	}
@@ -195,7 +197,7 @@ public class TypeCheckVisitor extends DepthFirstVisitor{
      * */
     public void visit(ArrayAssign n) {
     	
-    	Type typeI = symbolTable.getVarType(currMethod,currClass,n.i.toString());
+    	Type typeI = symbolTable.getVarType( currMethod,currClass , n.i.toString() );
       
     	if (! (typeI instanceof IntArrayType) ) {
     		System.out.println("The identifier in an array assignment must be of type int []");
