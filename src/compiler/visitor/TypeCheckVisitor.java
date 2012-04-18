@@ -22,8 +22,8 @@ import compiler.syntaxtree.While;
 
 public class TypeCheckVisitor extends DepthFirstVisitor{
 
-	public static Class currClass;
-    public static Method currMethod;
+	public static Class currentClass;
+    public static Method currentMethod;
     public static Table symbolTable;
    
     public TypeCheckVisitor( Table table ){
@@ -47,7 +47,7 @@ public class TypeCheckVisitor extends DepthFirstVisitor{
      * */
     public void visit(MainClass n) {
       String i1 = n.i1.toString();
-      currClass = symbolTable.getClass(i1);
+      currentClass = symbolTable.getClass(i1);
       
       n.i2.accept(this);
       n.s.accept(this);
@@ -60,7 +60,7 @@ public class TypeCheckVisitor extends DepthFirstVisitor{
      * */
     public void visit(ClassDeclSimple n) {
     	String id = n.i.toString();
-    	currClass = symbolTable.getClass(id);
+    	currentClass = symbolTable.getClass(id);
     	
     	for ( int i = 0; i < n.vl.size(); i++ ) {
     		n.vl.elementAt(i).accept(this);
@@ -80,7 +80,7 @@ public class TypeCheckVisitor extends DepthFirstVisitor{
     public void visit(ClassDeclExtends n) {
     	
     	String id = n.i.toString();
-    	currClass = symbolTable.getClass(id);
+    	currentClass = symbolTable.getClass(id);
     	n.j.accept(this);
     	
     	for ( int i = 0; i < n.vl.size(); i++ ) {
@@ -112,8 +112,8 @@ public class TypeCheckVisitor extends DepthFirstVisitor{
     public void visit(MethodDecl n) {
     	n.t.accept(this);
     	String id = n.i.toString();
-    	currMethod = currClass.getMethod(id);
-    	Type retType = currMethod.type();
+    	currentMethod = currentClass.getMethod(id);
+    	Type retType = currentMethod.type();
     
     	for ( int i = 0; i < n.fl.size(); i++ ) {
     		n.fl.elementAt(i).accept(this);
@@ -182,7 +182,7 @@ public class TypeCheckVisitor extends DepthFirstVisitor{
      * Identifier i;
      * */
     public void visit(Assign n) {
-    	Type t1 = symbolTable.getVarType(currMethod,currClass,n.i.toString());
+    	Type t1 = symbolTable.getVarType(currentMethod, currentClass, n.i.toString());
     	Type t2 = n.e.accept(new TypeCheckStmExpVisitor() );
     	
     	if ( symbolTable.compareTypes(t1,t2) == false ){
@@ -197,7 +197,7 @@ public class TypeCheckVisitor extends DepthFirstVisitor{
      * */
     public void visit(ArrayAssign n) {
     	
-    	Type typeI = symbolTable.getVarType( currMethod,currClass , n.i.toString() );
+    	Type typeI = symbolTable.getVarType( currentMethod, currentClass , n.i.toString() );
       
     	if (! (typeI instanceof IntArrayType) ) {
     		System.out.println("The identifier in an array assignment must be of type int []");
