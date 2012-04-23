@@ -53,26 +53,27 @@ public class Table {
 	//---------------------------------------------
 	
 	public boolean addClass(String id, String parent) {
+		
 	    if(containsClass(id))
-                    return false;
+            return false;
 	    else
-		hashtable.put(id, new Class(id, parent));
+	    	hashtable.put(id, new Class(id, parent));
+	    
 	    return true;
     }
 
     public Class getClass(String id) {
-	    if(containsClass(id))
-		return (Class) hashtable.get(id);
+	   
+    	if(containsClass(id))
+    		return (Class)hashtable.get(id);
 	    else
-		return null;
+	    	return null;
     }
 
     public boolean containsClass(String id) {
 	    return hashtable.containsKey(id);
     }
-
-
-
+    
     public Type getVarType(Method m, Class c, String id) {
       if(m != null) {
 	  if(m.getVar(id) != null) {
@@ -88,45 +89,46 @@ public class Table {
 	      return c.getVar(id).type();
 	  }
 	  else {
+		  
 	      if(c.parent() == null) {
-		  c = null;
+	    	  c = null;
 	      }
 	      else {
-		  c = getClass(c.parent());
+	    	  c = getClass(c.parent());
 	      }
 	  }
       }
 
 
-      System.out.println("Variable " + id
-			 + " not defined in current scope");
+      System.out.println("Variable " + id + " not defined in current scope");
+      
       System.exit(0);
       return null;
   }
 
   public Method getMethod(String id, String classScope) {
-	if(getClass(classScope)==null) {
-	    System.out.println("Class " + classScope
-			       + " not defined");
+	
+	  if(getClass(classScope)==null) {
+	    System.out.println("Class " + classScope + " not defined");
 	    System.exit(0);
 	}
 
 	Class c = getClass(classScope);
+	
 	while(c != null) {
 	    if(c.getMethod(id) != null) {
-		return c.getMethod(id);
+	    	return c.getMethod(id);
 	    }
 	    else {
-		if(c.parent() == null) {
-		    c = null;
+	    	if(c.parent() == null) {
+	    		c = null;
 		}
 		else {
 		    c = getClass(c.parent());
 		}
 	    }
 	}
-
-
+	
 	System.out.println("Method " + id + " not defined in class " + classScope);
 
 	System.exit(0);

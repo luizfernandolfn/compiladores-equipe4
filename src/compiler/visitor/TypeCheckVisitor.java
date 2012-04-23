@@ -1,7 +1,5 @@
 package compiler.visitor;
 
-import java.lang.reflect.Method;
-
 import compiler.symbol.Table;
 import compiler.syntaxtree.ArrayAssign;
 import compiler.syntaxtree.Assign;
@@ -24,7 +22,7 @@ public class TypeCheckVisitor extends DepthFirstVisitor{
 
 	public static Class currentClass;
     public static Method currentMethod;
-    public static Table symbolTable;
+    public static SymbolTable symbolTable;
    
     public TypeCheckVisitor( Table table ){
     	symbolTable = table;
