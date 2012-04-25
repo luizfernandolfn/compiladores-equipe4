@@ -1,6 +1,7 @@
 package compiler.visitor;
 
-import compiler.symbol.Table;
+import compiler.symbol.Method;
+import compiler.symbol.SymbolTable;
 import compiler.syntaxtree.ArrayAssign;
 import compiler.syntaxtree.Assign;
 import compiler.syntaxtree.BooleanType;
@@ -24,7 +25,7 @@ public class TypeCheckVisitor extends DepthFirstVisitor{
     public static Method currentMethod;
     public static SymbolTable symbolTable;
    
-    public TypeCheckVisitor( Table table ){
+    public TypeCheckVisitor( SymbolTable table ){
     	symbolTable = table;
     }
 
