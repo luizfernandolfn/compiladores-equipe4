@@ -3,9 +3,8 @@ package compiler;
 import java.io.PrintWriter;
 import java.util.Iterator;
 
-import compiler.javacc.MiniJavaParser;
-import compiler.javacc.ParseException;
 import compiler.temp.Temp;
+import compiler.graph.Node;
 import compiler.syntaxtree.*;
 import compiler.visitor.*;
 

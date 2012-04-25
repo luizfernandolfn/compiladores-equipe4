@@ -1,5 +1,6 @@
 package compiler.visitor;
 
+import compiler.symbol.Class;
 import compiler.symbol.Method;
 import compiler.symbol.SymbolTable;
 import compiler.syntaxtree.ArrayAssign;
