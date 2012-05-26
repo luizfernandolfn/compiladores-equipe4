@@ -1,5 +1,1 @@
-package compiler.frame;
-
-public class Access {
-
-}
+package compiler.frame;public abstract class Access {  public abstract String toString();  public abstract compiler.tree.Exp exp(compiler.tree.Exp e);}

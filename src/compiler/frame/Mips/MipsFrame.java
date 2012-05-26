@@ -173,15 +173,15 @@ public class MipsFrame extends Frame {
 
 	private static HashMap<String, Label> labels = new HashMap<String, Label>();
 
-	public Tree.Exp externalCall(String s, List<Tree.Exp> args) {
+	public compiler.tree.Exp externalCall(String s, List<compiler.tree.Exp> args) {
 		String func = s.intern();
 		Label l = labels.get(func);
 		if (l == null) {
 			l = new Label("_" + func);
 			labels.put(func, l);
 		}
-		args.add(0, new Tree.CONST(0));
-		return new Tree.CALL(new Tree.NAME(l), args);
+		args.add(0, new compiler.tree.CONST(0));
+		return new compiler.tree.CALL(new compiler.tree.NAME(l), args);
 	}
 
 	public String string(Label lab, String string) {
@@ -279,10 +279,10 @@ public class MipsFrame extends Frame {
 
 	int maxArgOffset = 0;
 
-	public List<Assem.Instr> codegen(List<Tree.Stm> stms) {
-		List<Assem.Instr> insns = new java.util.LinkedList<Assem.Instr>();
+	public List<compiler.assem.Instr> codegen(List<compiler.tree.Stm> stms) {
+		List<compiler.assem.Instr> insns = new java.util.LinkedList<compiler.assem.Instr>();
 		Codegen cg = new Codegen(this, insns.listIterator());
-		for (java.util.Iterator<Tree.Stm> s = stms.iterator(); s.hasNext();)
+		for (java.util.Iterator<compiler.tree.Stm> s = stms.iterator(); s.hasNext();)
 			s.next().accept(cg);
 		return insns;
 	}
@@ -312,24 +312,25 @@ public class MipsFrame extends Frame {
 		calldefs = l.toArray(calldefs);
 	}
 
-	private static Tree.Stm SEQ(Tree.Stm left, Tree.Stm right) {
+	private static compiler.tree.Stm SEQ(compiler.tree.Stm left, compiler.tree.Stm right) {
 		if (left == null)
 			return right;
 		if (right == null)
 			return left;
-		return new Tree.SEQ(left, right);
+		
+		return new compiler.tree.SEQ(left, right);
 	}
 
-	private static Tree.MOVE MOVE(Tree.Exp d, Tree.Exp s) {
-		return new Tree.MOVE(d, s);
+	private static compiler.tree.MOVE MOVE(compiler.tree.Exp d, compiler.tree.Exp s) {
+		return new compiler.tree.MOVE(d, s);
 	}
 
-	private static Tree.TEMP TEMP(Temp t) {
-		return new Tree.TEMP(t);
+	private static compiler.tree.TEMP TEMP(Temp t) {
+		return new compiler.tree.TEMP(t);
 	}
 
 	private void assignFormals(Iterator<Access> formals,
-			Iterator<Access> actuals, List<Tree.Stm> body) {
+			Iterator<Access> actuals, List<compiler.tree.Stm> body) {
 		if (!formals.hasNext() || !actuals.hasNext())
 			return;
 		Access formal = formals.next();
@@ -338,7 +339,7 @@ public class MipsFrame extends Frame {
 		body.add(0, MOVE(formal.exp(TEMP(FP)), actual.exp(TEMP(FP))));
 	}
 
-	private void assignCallees(int i, List<Tree.Stm> body) {
+	private void assignCallees(int i, List<compiler.tree.Stm> body) {
 		if (i >= calleeSaves.length)
 			return;
 		Access a = allocLocal(!spilling);
@@ -349,22 +350,22 @@ public class MipsFrame extends Frame {
 
 	private List<Access> actuals;
 
-	public void procEntryExit1(List<Tree.Stm> body) {
+	public void procEntryExit1(List<compiler.tree.Stm> body) {
 		assignFormals(formals.iterator(), actuals.iterator(), body);
 		assignCallees(0, body);
 	}
 
-	private static Assem.Instr OPER(String a, Temp[] d, Temp[] s) {
-		return new Assem.OPER(a, d, s, null);
+	private static compiler.assem.Instr OPER(String a, Temp[] d, Temp[] s) {
+		return new compiler.assem.OPER(a, d, s, null);
 	}
 
-	public void procEntryExit2(List<Assem.Instr> body) {
+	public void procEntryExit2(List<compiler.assem.Instr> body) {
 		body.add(OPER("#\treturn", null, returnSink));
 	}
 
-	public void procEntryExit3(List<Assem.Instr> body) {
+	public void procEntryExit3(List<compiler.assem.Instr> body) {
 		int frameSize = maxArgOffset - offset;
-		ListIterator<Assem.Instr> cursor = body.listIterator();
+		ListIterator<compiler.assem.Instr> cursor = body.listIterator();
 		cursor.add(OPER("\t.text", null, null));
 		cursor.add(OPER(name + ":", null, null));
 		cursor.add(OPER(name + "_framesize=" + frameSize, null, null));
@@ -394,7 +395,7 @@ public class MipsFrame extends Frame {
 	private static boolean spilling = true;
 
 	// set spilling to true when the spill method is implemented
-	public void spill(List<Assem.Instr> insns, Temp[] spills) {
+	public void spill(List<compiler.assem.Instr> insns, Temp[] spills) {
 		if (spills != null) {
 			if (!spilling) {
 				for (int s = 0; s < spills.length; s++)
@@ -402,8 +403,8 @@ public class MipsFrame extends Frame {
 				throw new Error("Spilling unimplemented");
 			} else
 				for (int s = 0; s < spills.length; s++) {
-					Tree.Exp exp = allocLocal(true).exp(TEMP(FP));
-					for (ListIterator<Assem.Instr> i = insns.listIterator(); i
+					compiler.tree.Exp exp = allocLocal(true).exp(TEMP(FP));
+					for (ListIterator<compiler.assem.Instr> i = insns.listIterator(); i
 							.hasNext();) {
 						Assem.Instr insn = i.next();
 						Temp[] use = insn.use;
