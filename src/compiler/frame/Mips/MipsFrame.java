@@ -378,8 +378,8 @@ public class MipsFrame extends Frame {
 		body.add(OPER("\tj $ra", null, new Temp[] { RA }));
 	}
 
-	private static Temp[] registers = {};
-	{
+	private static Temp[] registers = {};{
+		
 		LinkedList<Temp> l = new LinkedList<Temp>();
 		addAll(l, callerSaves);
 		addAll(l, calleeSaves);
@@ -406,14 +406,14 @@ public class MipsFrame extends Frame {
 					compiler.tree.Exp exp = allocLocal(true).exp(TEMP(FP));
 					for (ListIterator<compiler.assem.Instr> i = insns.listIterator(); i
 							.hasNext();) {
-						Assem.Instr insn = i.next();
+						compiler.assem.Instr insn = i.next();
 						Temp[] use = insn.use;
 						if (use != null)
 							for (int u = 0; u < use.length; u++) {
 								if (use[u] == spills[s]) {
 									Temp t = new Temp();
 									t.spillTemp = true;
-									Tree.Stm stm = MOVE(TEMP(t), exp);
+									compiler.tree.Stm stm = MOVE(TEMP(t), exp);
 									i.previous();
 									stm.accept(new Codegen(this, i));
 									if (insn != i.next())

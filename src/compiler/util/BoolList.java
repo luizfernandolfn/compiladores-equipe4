@@ -1,6 +1,7 @@
 package compiler.util;
 
 public class BoolList {
+	
 	public boolean head;
 	public BoolList tail;
 

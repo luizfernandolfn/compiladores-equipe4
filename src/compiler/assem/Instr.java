@@ -22,7 +22,7 @@ public abstract class Instr {
 			return nthTemp(l.tail, i - 1);
 	}
 
-	private Label nthLabel(LabelList l, int i) {
+	private Label nthLabel( LabelList l, int i) {
 		if (i == 0)
 			return l.head;
 		else

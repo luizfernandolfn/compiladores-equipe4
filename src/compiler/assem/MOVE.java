@@ -2,6 +2,7 @@ package compiler.assem;
 
 import compiler.temp.Temp;
 import compiler.temp.TempList;
+import compiler.util.List;
 
 public class MOVE extends Instr {
 	public Temp dst;

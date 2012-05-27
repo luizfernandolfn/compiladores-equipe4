@@ -1,15 +1,19 @@
 package compiler.frame.Mips;
 
+import java.util.Iterator;
+import java.util.ListIterator;
+
 import compiler.assem.Instr;
 import compiler.assem.InstrList;
 import compiler.temp.Label;
 import compiler.temp.LabelList;
+import compiler.temp.Temp;
 import compiler.temp.TempList;
 import compiler.tree.BINOP;
 import compiler.tree.CALL;
 import compiler.tree.CJUMP;
 import compiler.tree.CONST;
-import compiler.tree.ExpStm;
+import compiler.tree.CodeVisitor;
 import compiler.tree.Exp;
 import compiler.tree.ExpList;
 import compiler.tree.JUMP;
@@ -19,596 +23,466 @@ import compiler.tree.MOVE;
 import compiler.tree.NAME;
 import compiler.tree.TEMP;
 
-public class Codegen{
+public class Codegen implements CodeVisitor {
 	
-	private InstrList ilist = null, last = null;
-	MipsFrame frame;
-
-	public Codegen(MipsFrame f)
-	{
+	private MipsFrame frame;
+	private ListIterator<Instr> insns;
+	
+	public Codegen(MipsFrame f, ListIterator<Instr> i){
 		frame = f;
+		insns = i;
 	}
 
-	private void emit(Instr inst)
-	{
-		if (last != null)
-			last = last.tail = new InstrList(inst, null);
-		else
-			last = ilist = new InstrList(inst, null);
+	private void emit(Instr inst){
+		insns.add(inst);
 	}
 
-	public InstrList codegen(compiler.tree.Stm s)
-	{
-		InstrList l;
-		munchStm(s);
-		l = ilist;
-		ilist = last = null;
-		return l;
+	static Assem.Instr OPER(String a, Temp[] d, Temp[] s, List<Label> j){
+		return new Assem.OPER("\t" + a, d, s, j);
+	}
+	    
+	static Assem.Instr OPER(String a, Temp[] d, Temp[] s){
+		return OPER(a, d, s, null);
+	}
+	    
+	static Instr MOVE(String a, Temp d, Temp s){
+		return new Assem.MOVE("\t" + a, d, s);
 	}
 
-	/*
-	 * Trata casos de operacoes aritmeticas do tipo (binop, left, right)
-	 */
-	private temp.Temp munchBinop(Exp left, Exp right, int binop)
-	{
-		compiler.temp.Temp result = new compiler.temp.Temp();
-		compiler.temp.Temp templeft;
-		compiler.temp.Temp tempright;
-
-		switch (binop)
-		{
-			case BINOP.PLUS :
-				if (right instanceof CONST) // binop(+, e1, const)
-				{
-					templeft = munchExp(left);
-					emit(
-						new compiler.assem.OPER(
-							"addiu `d0, `s0, " + ((CONST)right).value + "\n",
-							new TempList(result, null),
-							new TempList(templeft, null)));
-				}
-				else if (left instanceof CONST) // binop(+, const, exp)
-				{
-					tempright = munchExp(right);
-					emit(
-						new compiler.assem.OPER(
-							"addiu `d0, `s0, " + ((CONST)left).value + "\n",
-							new TempList(result, null),
-							new TempList(tempright, null)));
-				}
-				else
-				{ // binop(+, e1, e2)
-					templeft = munchExp(left);
-					tempright = munchExp(right);
-					emit(
-						new compiler.assem.OPER(
-							"addu `d0, `s0, `s1\n",
-							new TempList(result, null),
-							new TempList(templeft, new TempList(tempright, null))));
-				}
-				break;
-
-			case BINOP.MUL : // binop(*, e1, e2)
-				templeft = munchExp(left);
-				tempright = munchExp(right);
-				emit(
-					new compiler.assem.OPER(
-						"mul `d0, `s0,  `s1\n",
-						new TempList(result, null),
-						new TempList(templeft, new TempList(tempright, null))));
-				break;
-
-			case BINOP.DIV : // binop(/, e1, e2)		    
-				templeft = munchExp(left);
-				tempright = munchExp(right);
-				emit(
-					new compiler.assem.OPER(
-						"divu `d0, `s0,  `s1\n",
-						new TempList(result, null),
-						new TempList(templeft, new TempList(tempright, null))));
-				break;
-
-			case BINOP.MINUS : //			binop(-, e1, e2)
-				templeft = munchExp(left);
-				tempright = munchExp(right);
-				emit(
-					new compiler.assem.OPER(
-						"subu `d0, `s0, `s1\n",
-						new TempList(result, null),
-						new TempList(templeft, new TempList(tempright, null))));
-				break;
-
-			case BINOP.AND :
-				if (right instanceof CONST) // binop(and, e1, const)
-				{
-					templeft = munchExp(left);
-					emit(
-						new compiler.assem.OPER(
-							"andi `d0, `s0, " + ((CONST)right).value + "\n",
-							new TempList(result, null),
-							new TempList(templeft, null)));
-				}
-				else
-				{ // binop(and, e1, e2)
-					templeft = munchExp(left);
-					tempright = munchExp(right);
-					emit(
-						new compiler.assem.OPER(
-							"and`d0, `s0, `s1\n",
-							new TempList(result, null),
-							new TempList(templeft, new TempList(tempright, null))));
-				}
-				break;
-			case BINOP.OR :
-				if (right instanceof CONST) //binop(or, e1, const)
-				{
-					templeft = munchExp(left);
-					emit(
-						new compiler.assem.OPER(
-							"ori `d0, `s0, " + ((CONST)right).value + "\n",
-							new TempList(result, null),
-							new TempList(templeft, null)));
-				}
-				else
-				{ // binop(or, e1, e2)
-					templeft = munchExp(left);
-					tempright = munchExp(right);
-					emit(
-						new compiler.assem.OPER(
-							"or `d0, `s0, `s1\n",
-							new TempList(result, null),
-							new TempList(templeft, new TempList(tempright, null))));
-				}
-				break;
-			case BINOP.XOR :
-				if (right instanceof CONST) //	binop(xor, e1, const)
-				{
-					templeft = munchExp(left);
-					emit(
-						new compiler.assem.OPER(
-							"xori `d0, `s0, " + ((CONST)right).value + "\n",
-							new TempList(result, null),
-							new TempList(templeft, null)));
-				}
-				else
-				{ //binop(xor, e1, e2) 
-					templeft = munchExp(left);
-					tempright = munchExp(right);
-					emit(
-						new compiler.assem.OPER(
-							"xor `d0, `s0, `s1\n",
-							new TempList(result, null),
-							new TempList(templeft, new TempList(tempright, null))));
-				}
-				break;
-			case BINOP.LSHIFT :
-				if (right instanceof CONST) //binop(lshift, e1, const)
-				{
-					templeft = munchExp(left);
-					emit(
-						new compiler.assem.OPER(
-							"sll `d0, `s0, " + ((CONST)right).value + "\n",
-							new TempList(result, null),
-							new TempList(templeft, null)));
-				}
-				else
-				{ //binop(lshift, e1, e2) 
-					templeft = munchExp(left);
-					tempright = munchExp(right);
-					emit(
-						new compiler.assem.OPER(
-							"sllv `d0, `s0, `s1\n",
-							new TempList(result, null),
-							new TempList(templeft, new TempList(tempright, null))));
-				}
-				break;
-			case BINOP.RSHIFT :
-				if (right instanceof CONST) //binop(rshift, e1, const)
-				{
-					templeft = munchExp(left);
-					emit(
-						new compiler.assem.OPER(
-							"slr `d0, `s0, " + ((CONST)right).value + "\n",
-							new TempList(result, null),
-							new TempList(templeft, null)));
-				}
-				else
-				{
-					//binop(rshift, e1, e2) 
-					templeft = munchExp(left);
-					tempright = munchExp(right);
-					emit(
-						new compiler.assem.OPER(
-							"slrv `d0, `s0, `s1\n",
-							new TempList(result, null),
-							new TempList(templeft, new TempList(tempright, null))));
-				}
-				break;
-			case BINOP.ARSHIFT :
-				if (right instanceof CONST) //binop(arshift, e1, const)
-				{
-					templeft = munchExp(left);
-					emit(
-						new compiler.assem.OPER(
-							"sra `d0, `s0, " + ((CONST)right).value + "\n",
-							new TempList(result, null),
-							new TempList(templeft, null)));
-				}
-				else
-				{ //binop(arshift, e1, e2) 
-					templeft = munchExp(left);
-					tempright = munchExp(right);
-					emit(
-						new compiler.assem.OPER(
-							"srav `d0, `s0, `s1\n",
-							new TempList(result, null),
-							new TempList(templeft, new TempList(tempright, null))));
-				}
-				break;
-		}
-
-		return result;
-	}
-
-	/* 
-	 * Carrega valores da memoria para registradores 
-	 */
-	private compiler.temp.Temp munchMem(Exp address)
-	{
-		compiler.temp.Temp result = new compiler.temp.Temp();
-
-		if (address instanceof BINOP
-			&& ((BINOP)address).left instanceof CONST
-			&& ((BINOP)address).right instanceof Exp
-			&& ((BINOP)address).binop == BINOP.PLUS)
-		{
-			// mem(binop(+, const, exp))
-			compiler.temp.Temp temp = munchExp(((BINOP)address).right);
-			emit(
-				new assem.OPER(
-					"lw `d0, " + ((CONST) ((BINOP)address).left).value + "(`s0)\n",
-					new TempList(result, null),
-					new TempList(temp, null)));
-		}
-		else if (
-			address instanceof BINOP
-				&& ((BINOP)address).right instanceof CONST
-				&& ((BINOP)address).left instanceof Exp
-				&& ((BINOP)address).binop == BINOP.PLUS)
-		{
-			//		mem(binop(+, exp, const))
-			compiler.temp.Temp temp = munchExp(((BINOP)address).left);
-			emit(
-				new compiler.assem.OPER(
-					"lw `d0, " + ((CONST) ((BINOP)address).right).value + "(`s0)\n",
-					new TempList(result, null),
-					new TempList(temp, null)));
-		}
-		else if (address instanceof CONST)
-		{
-			//		mem(const)
-			emit(
-				new compiler.assem.OPER(
-					"lw `d0, " + ((CONST)address).value + "\n",
-					new TempList(result, null),
-					null));
-		}
-		else if (address instanceof NAME)
-		{
-			//		mem(NAME)
-			emit(
-				new compiler.assem.OPER(
-					"lw `d0, " + ((NAME)address).toString() + "\n",
-					new TempList(result, null),
-					null));
-		}
-		else
-		{
-			// mem(Exp)
-			temp.Temp temp = munchExp(address);
-			emit(new compiler.assem.OPER("lw `d0, (`s0)\n", new TempList(result, null), new TempList(temp, null)));
-		}
-		return result;
-	}
-
-	/* 
-	 * Armazena valores do registrador src no endereco dst 
-	 */
-	private void munchMove(Exp dst, Exp src)
-	{
-		compiler.temp.Temp srcreg = munchExp(src);
-
-		//move(temp, srcreg)
-		if (dst instanceof TEMP)
-		{
-			compiler.temp.Temp dstreg = ((TEMP)dst).temp;
-			emit(new compiler.assem.MOVE("move `d0, `s0\n", dstreg, srcreg));
-		}
-		else
-		{ //move(mem, src)
-			if (dst instanceof MEM)
-			{
-				if (((MEM)dst).exp instanceof BINOP
-					&& ((BINOP) ((MEM)dst).exp).binop == BINOP.PLUS
-					&& ((BINOP) ((MEM)dst).exp).left instanceof CONST)
-				{
-					//move(mem(binop(+, const, exp)), srcreg)
-					BINOP binop = ((BINOP) ((MEM)dst).exp);
-					compiler.temp.Temp dstreg = munchExp(binop.right);
-					emit(
-						new compiler.assem.OPER(
-							"sw `s0," + ((CONST)binop.left).value + "(`s1)\n",
-							null,
-							new TempList(srcreg, new TempList(dstreg, null))));
-				}
-				else if (
-					((MEM)dst).exp instanceof BINOP
-						&& ((BINOP) ((MEM)dst).exp).binop == BINOP.PLUS
-						&& ((BINOP) ((MEM)dst).exp).right instanceof CONST)
-				{
-					//move(mem(binop(+, exp, const)), srcreg)
-					BINOP binop = ((BINOP) ((MEM)dst).exp);
-					compiler.temp.Temp dstreg = munchExp(binop.left);
-					emit(
-						new compiler.assem.OPER(
-							"sw `s0," + ((CONST)binop.right).value + "(`s1)\n",
-							null,
-							new TempList(srcreg, new TempList(dstreg, null))));
-				}
-				else if (((MEM)dst).exp instanceof CONST)
-				{
-					//move( mem(const), srcreg)
-					emit(
-						new compiler.assem.OPER(
-							"sw `s0, " + ((CONST)dst).value + "\n",
-							null,
-							new TempList(srcreg, null)));
-				}
-				else //move(mem, srcreg)
-					{
-					compiler.temp.Temp dstreg = munchExp(((MEM)dst).exp);
-					emit(
-						new compiler.assem.OPER(
-							"sw `s0, (`s1)\n",
-							null,
-							new TempList(srcreg, new TempList(dstreg, null))));
-				}
-			}
-			else if (dst instanceof NAME)
-			{
-				//					move( mem(const), srcreg)
-				emit(
-					new compiler.assem.OPER(
-						"sw `s0, " + ((NAME)dst).toString() + "\n",
-						null,
-						new TempList(srcreg, null)));
-			}
-			else
-			{
-				//move(dstreg, srcreg)
-				compiler.temp.Temp dstreg = munchExp(dst);
-				emit(
-					new compiler.assem.OPER(
-						"sw `s0, (`s1)\n",
-						null,
-						new TempList(srcreg, new TempList(dstreg, null))));
-			}
-		}
-	}
-
-	/*
-	 * Gera um label no codigo 
-	 */
-	private void munchLabel(Label label)
-	{
-		emit(new compiler.assem.LABEL(label.toString() + ":\n", label));
-	}
-
-	/*
-	 * Gera um jump incondicional no codigo
-	 */
-	private void munchJump(Exp e, LabelList targets)
-	{
-		if (e instanceof NAME)
-			emit(new compiler.assem.OPER("j " + ((NAME)e).label.toString() + "\n", null, null, targets));
-		else
-			emit(new compiler.assem.OPER("j " + targets.head.toString() + "\n", null, null, targets));
-	}
-
-	/*
-	 * Gera um jump condicional do tipo 
-	 * if (left op right = true) goto t else goto f
-	 */
-	private void munchCJump(Exp left, Exp right, Label t, Label f, int op)
-	{
-		compiler.temp.Temp l = munchExp(left);
-		compiler.temp.Temp r = munchExp(right);
-
-		compiler.temp.TempList srcreg = new temp.TempList(l, new TempList(r, null));
-		compiler.temp.LabelList labels = new temp.LabelList(t, new temp.LabelList(f, null));
-
-		switch (op)
-		{
-			case CJUMP.EQ :
-				emit(new compiler.assem.OPER("beq `s0, `s1," + t.toString() + "\n", null, srcreg, labels));
-				break;
-			case CJUMP.GE :
-				emit(new compiler.assem.OPER("bge `s0, `s1," + t.toString() + "\n", null, srcreg, labels));
-				break;
-			case CJUMP.GT :
-				emit(new compiler.assem.OPER("bgt `s0, `s1," + t.toString() + "\n", null, srcreg, labels));
-				break;
-			case CJUMP.LE :
-				emit(new compiler.assem.OPER("ble `s0, `s1," + t.toString() + "\n", null, srcreg, labels));
-				break;
-			case CJUMP.LT :
-				emit(new compiler.assem.OPER("blt `s0, `s1," + t.toString() + "\n", null, srcreg, labels));
-				break;
-			case CJUMP.NE :
-				emit(new compiler.assem.OPER("bne `s0, `s1," + t.toString() + "\n", null, srcreg, labels));
-				break;
-			case CJUMP.UGE :
-				emit(new compiler.assem.OPER("bgeu `s0, `s1," + t.toString() + "\n", null, srcreg, labels));
-				break;
-			case CJUMP.UGT :
-				emit(new compiler.assem.OPER("bgtu `s0, `s1," + t.toString() + "\n", null, srcreg, labels));
-				break;
-			case CJUMP.ULE :
-				emit(new compiler.assem.OPER("bleu `s0, `s1," + t.toString() + "\n", null, srcreg, labels));
-				break;
-			case CJUMP.ULT :
-				emit(new compiler.assem.OPER("bltu `s0, `s1," + t.toString() + "\n", null, srcreg, labels));
-				break;
-		}
-
-	}
-
-	/*
-	 * Processa uma constante e retorna seu valor em um registrador
-	 */
-	private compiler.temp.Temp munchConst(CONST c)
-	{
-		compiler.temp.Temp result = new compiler.temp.Temp();
-		emit(new compiler.assem.OPER("addiu `d0, $zero, " + c.value + "\n", new TempList(result, null), null));
-
-		return result;
-	}
-
-	/*
-	 * Processa todos os argumentos recursivamente, coloca na pilha
-	 * e atualiza o stack pointer atual
-	 */
-	private compiler.temp.TempList munchArgs(int index, ExpList args)
-	{
-		// Processa o argumento corrente
-		compiler.temp.Temp temp = munchExp(args.head);
-		compiler.temp.TempList l = null;
-
-		// Se ainda existirem argumentos, processa
-		if (args.tail != null)
-			l = munchArgs(index + 1, args.tail);
-
-		emit(new compiler.assem.OPER("sw, `d0, " + 4 * index + "($sp)\n", new TempList(temp, null), null));
-
-		return new compiler.temp.TempList(temp, l);
-	}
-
-	private String callerSaveRegs()
-	{
-		int offset = 0;
-		StringBuffer temp = new StringBuffer("");
-
-		// Aloca espaco para salvar regs.
-		temp.append("subu $sp, $sp, " + 10 * frame.wordSize() + "\n");
-
-		// Callee salvando registradores s.
-		for (int i = 0; i <= 9; i++)
-		{
-			temp.append("sw $t" + i + ", " + offset + "($sp)\n");
-			offset += frame.wordSize();
-		}
-
-		return temp.toString();
-	}
-
-	private String loadRegs()
-	{
-		int offset = 9 * frame.wordSize(); // # regs * word a partir do ultimo.
-		StringBuffer temp = new StringBuffer("");
-
-		//		Callee carregando registradores s.
-		for (int i = 9; i >= 0; i--)
-		{
-			temp.append("lw $t" + i + ", " + offset + "($sp)\n");
-			offset -= frame.wordSize();
-		}
-
-		//		Desaloca espaco de regs salvos.
-		temp.append("addiu $sp, $sp, " + 10 * frame.wordSize() + "\n");
-
-		return temp.toString();
-	}
-	/*
-	 * Cria codigo para chamada de funcao
-	 */
-	private compiler.temp.Temp munchCall(Exp func, ExpList args)
-	{
-		int argc = 0;
-
-		if (args != null)
-		{
-
-			argc++;
-			//Conta o numero de argumentos
-			for (ExpList l = args; l.tail != null; l = l.tail)
-				argc++;
-
-			emit(new compiler.assem.OPER(callerSaveRegs(), null, null));
-
-			//Atualiza sp para "alocar" memoria
-			emit(new compiler.assem.OPER("subu $sp, $sp, " + 4 * argc + "\n", null, null));
-
-			// Processa argumentos
-			compiler.temp.TempList tl = munchArgs(0, args);
-
-			//Chama a funcao
-			emit(new compiler.assem.OPER("jal __" + ((NAME)func).label.toString() + "\n", null, tl));
-
-			//"Libera" memoria dos formais da chamada
-			emit(new compiler.assem.OPER("addiu $sp, $sp, " + 4 * argc + "\n", null, null));
-			
-			emit(new compiler.assem.OPER(loadRegs(), null, null));
-		}
-		else
-		{
-			emit(new compiler.assem.OPER(callerSaveRegs(), null, null));
-			emit(new compiler.assem.OPER("jal " + ((NAME)func).label.toString() + "\n", null, null));
-			emit(new compiler.assem.OPER(loadRegs(), null, null));
-		}
-		return frame.RV();
-	}
-
-	private void munchStm(compiler.tree.Stm s)
-	{
-		if (s instanceof MOVE)
-			munchMove(((MOVE)s).dst, (((MOVE)s).src));
-		if (s instanceof CJUMP)
-			munchCJump(
-				((CJUMP)s).left,
-				((CJUMP)s).right,
-				((CJUMP)s).iftrue,
-				((CJUMP)s).iffalse,
-				((CJUMP)s).relop);
-		if (s instanceof JUMP)
-			munchJump(((JUMP)s).exp, ((JUMP)s).targets);
-		if (s instanceof LABEL)
-			munchLabel(((LABEL)s).label);
-		if (s instanceof ExpStm)
-			munchExp(((ExpStm)s).exp);
-	}
-
-	private compiler.temp.Temp munchExp(tree.Exp s)
-	{
-		if (s instanceof MEM)
-			return munchMem(((MEM)s).exp);
-		if (s instanceof BINOP)
-			return munchBinop(((BINOP)s).left, ((BINOP)s).right, ((BINOP)s).binop);
-		if (s instanceof CALL)
-			return munchCall(((CALL)s).func, ((CALL)s).args);
-		if (s instanceof TEMP)
-			return ((TEMP)s).temp;
-		if (s instanceof CONST)
-			return munchConst((CONST)s);
-		if (s instanceof NAME)
-		{
-			compiler.temp.Temp nameTemp = new compiler.temp.Temp();
-			emit(
-				new compiler.assem.OPER(
-					"la `d0, " + ((NAME)s).label.toString() + "\n",
-					new TempList(nameTemp, null),
-					null));
-			return nameTemp;
+	private static compiler.tree.CONST CONST16(compiler.tree.Exp e){
+	
+		if (e instanceof compiler.tree.CONST) {
+			compiler.tree.CONST c = (compiler.tree.CONST) e;
+		    int value = c.value;
+		    
+		    if (value == (short)value)
+			return c;
 		}
 		return null;
 	}
+
+	private static boolean immediate(compiler.tree.BINOP e) {
+		compiler.tree.CONST left = CONST16(e.left);
+		compiler.tree.CONST right = CONST16(e.right);
+		
+		if (left == null)
+		    return right != null;
+		switch (e.binop) {
+			case compiler.tree.BINOP.PLUS:
+			case compiler.tree.BINOP.MUL:
+			case compiler.tree.BINOP.AND:
+			case compiler.tree.BINOP.OR:
+			case compiler.tree.BINOP.XOR:
+			    if (right == null) {
+				e.left = e.right;
+				e.right = left;
+		    }
+		    return true;
+		}
+		return false;
+	}
+
+	public void visit(Tree.MOVE s) {
+	
+	if (s.dst instanceof Tree.MEM) {
+	    Tree.MEM mem = (Tree.MEM)s.dst;
+
+	   if (mem.exp instanceof Tree.BINOP) {
+		   Tree.BINOP b = (Tree.BINOP)mem.exp;
+		   if (b.binop == Tree.BINOP.PLUS && immediate(b)) {
+			    int right = ((Tree.CONST)b.right).value;
+			    Temp left = (b.left instanceof Tree.TEMP) ?
+				((Tree.TEMP)b.left).temp : b.left.accept(this);
+			    String off = Integer.toString(right);
+			    if (left == frame.FP) {
+				left = frame.SP;
+				off += "+" + frame.name + "_framesize";
+			}
+			emit(OPER("sw `s0 " + off + "(`s1)", null,
+			     new Temp[]{s.src.accept(this), left}));
+			   return;
+		 }
+	 }
+
+        // MOVE(MEM(CONST), Exp)
+     Tree.CONST exp = CONST16(mem.exp);
+    if (exp != null) {
+	emit(OPER("sw `s0 " + exp.value + "(`s1)", null,
+		  new Temp[]{s.src.accept(this), frame.ZERO}));
+	return;
+    }
+
+    // MOVE(MEM(TEMP), Exp)
+    if (mem.exp instanceof Tree.TEMP) {
+	Temp temp = ((Tree.TEMP)mem.exp).temp;
+	if (temp == frame.FP) {
+	    emit(OPER("sw `s0 " + frame.name + "_framesize" + "(`s1)",
+		      null,
+		      new Temp[]{s.src.accept(this), frame.SP}));
+	    return;
+	}
+    }
+
+        // MOVE(MEM(Exp), Exp)
+        emit(OPER("sw `s0 (`s1)", null,
+	      new Temp[]{s.src.accept(this), mem.exp.accept(this)}));
+        return;
+	}
+
+        // From here on dst must be a TEMP
+        Temp dst = ((Tree.TEMP)s.dst).temp;
+
+	// MOVE(TEMP, MEM)
+	if (s.src instanceof Tree.MEM) {
+	    Tree.MEM mem = (Tree.MEM)s.src;
+
+	    // MOVE(TEMP, MEM(+ Exp CONST))
+	    if (mem.exp instanceof Tree.BINOP) {
+		Tree.BINOP b = (Tree.BINOP)mem.exp;
+		if (b.binop == Tree.BINOP.PLUS && immediate(b)) {
+		    int right = ((Tree.CONST)b.right).value;
+		    Temp left = (b.left instanceof Tree.TEMP) ?
+			((Tree.TEMP)b.left).temp : b.left.accept(this);
+		    String off = Integer.toString(right);
+		    if (left == frame.FP) {
+			left = frame.SP;
+			off += "+" + frame.name + "_framesize";
+		    }
+		    emit(OPER("lw `d0 " + off + "(`s0)",
+			      new Temp[]{dst}, new Temp[]{left}));
+		    return;
+		}
+	    }
+
+	    // MOVE(TEMP, MEM(CONST))
+	    Tree.CONST exp = CONST16(mem.exp);
+	    if (exp != null) {
+		emit(OPER("lw `d0 " + exp.value + "(`s0)",
+			  new Temp[]{dst}, new Temp[]{frame.ZERO}));
+		return;
+	    }
+
+	    // MOVE(TEMP, MEM(TEMP))
+	    if (mem.exp instanceof Tree.TEMP) {
+		Temp temp = ((Tree.TEMP)mem.exp).temp;
+		if (temp == frame.FP) {
+		    emit(OPER("lw `d0 " + frame.name + "_framesize" + "(`s0)",
+			      new Temp[]{dst}, new Temp[]{frame.SP}));
+		    return;
+		}
+	    }
+
+	    // MOVE(TEMP, MEM(Exp))
+	    emit(OPER("lw `d0 (`s0)",
+		      new Temp[]{dst}, new Temp[]{mem.exp.accept(this)}));
+	    return;
+	}
+
+	// MOVE(TEMP, Exp)
+        emit(MOVE("move `d0 `s0", dst, s.src.accept(this)));
+    }
+
+    public void visit(compiler.tree.EXPE s) { 
+    	s.exp.accept(this); 
+    }
+
+    public void visit(Tree.JUMP s) {
+        if (s.exp instanceof Tree.NAME) {
+	    Tree.NAME name = (Tree.NAME)s.exp;
+	    // JUMP(Tree.NAME, List<Label>)
+	    emit(OPER("b " + name.label.toString(), null, null, s.targets));
+	    return;
+		}
+		// JUMP(Exp, List<Label>)
+		emit(OPER("jr `s0", null, new Temp[]{s.exp.accept(this)}, s.targets));
+		return;
+    }
+
+    private static boolean immediate(compiler.tree.CJUMP s) {
+        compiler.tree.CONST left = CONST16(s.left);
+        compiler.tree.CONST right = CONST16(s.right);
+		
+        if (left == null)
+		    return right != null;
+		
+        if (right == null) {
+		    s.left = s.right;
+		    s.right = left;
+		    switch (s.relop) {
+			    case compiler.tree.CJUMP.EQ:
+			    case compiler.tree.CJUMP.NE:
+			    	break;
+			    case compiler.tree.CJUMP.LT:
+					s.relop = compiler.tree.CJUMP.GT;
+					break;
+			    case compiler.tree.CJUMP.GE:
+					s.relop = compiler.tree.CJUMP.LE;
+					break;
+			    case compiler.tree.CJUMP.GT:
+					s.relop = compiler.tree.CJUMP.LT;
+					break;
+			    case compiler.tree.CJUMP.LE:
+					s.relop = compiler.tree.CJUMP.GE;
+					break;
+			    case compiler.tree.CJUMP.ULT:
+					s.relop = compiler.tree.CJUMP.UGT;
+					break;
+			    case compiler.tree.CJUMP.UGE:
+					s.relop = compiler.tree.CJUMP.ULE;
+					break;
+			    case compiler.tree.CJUMP.UGT:
+					s.relop = compiler.tree.CJUMP.ULT;
+					break;
+			    case compiler.tree.CJUMP.ULE:
+					s.relop = compiler.tree.CJUMP.UGE;
+					break;
+			    default:
+			    	throw new Error("bad relop in Codegen.immediate");
+		    }
+        }
+	return true;
+    }
+
+    private static String[] CJUMP = new String[10];
+	    
+    	static {
+			CJUMP[compiler.tree.CJUMP.EQ ] = "beq";
+			CJUMP[compiler.tree.CJUMP.NE ] = "bne";
+			CJUMP[compiler.tree.CJUMP.LT ] = "blt";
+			CJUMP[compiler.tree.CJUMP.GT ] = "bgt";
+			CJUMP[compiler.tree.CJUMP.LE ] = "ble";
+			CJUMP[compiler.tree.CJUMP.GE ] = "bge";
+			CJUMP[compiler.tree.CJUMP.ULT] = "bltu";
+			CJUMP[compiler.tree.CJUMP.ULE] = "bleu";
+			CJUMP[compiler.tree.CJUMP.UGT] = "bgtu";
+			CJUMP[compiler.tree.CJUMP.UGE] = "bgeu";
+	    }
+
+	    public void visit(Tree.CJUMP s) {
+	        List<Label> targets = new LinkedList<Label>();
+	        targets.add(s.iftrue);
+		targets.add(s.iffalse);
+	        if (immediate(s)) {
+		    int right = ((Tree.CONST)s.right).value;
+		    // CJUMP(op, Exp, CONST, Label, Label)
+		    emit(OPER(CJUMP[s.relop] + " `s0 " + right + " "
+			      + s.iftrue.toString(),
+			      null, new Temp[]{s.left.accept(this)}, targets));
+		    return;
+		}
+
+	        // CJUMP(op, Exp, Exp, Label, Label)
+	        emit(OPER(CJUMP[s.relop] + " `s0 `s1 " + s.iftrue.toString(),
+			  null, new Temp[]{s.left.accept(this), s.right.accept(this)},
+			  targets));
+		return;
+	    }
+
+    public void visit(Tree.LABEL l) {
+        emit(new Assem.LABEL(l.label.toString() + ":", l.label));
+	return;
+    }
+
+    public Temp visit(compiler.tree.CONST e) {
+		if (e.value == 0)
+		    return frame.ZERO;
+		Temp t = new Temp();
+		emit(OPER("li `d0 " + e.value, new Temp[]{t}, null));
+		return t;
+    }
+
+    public Temp visit(compiler.tree.NAME e) {
+		Temp t = new Temp();
+		emit(OPER("la `d0 " + e.label.toString(), new Temp[]{t}, null));
+		return t;
+    }
+
+    public Temp visit(compiler.tree.TEMP e) {
+		if (e.temp == frame.FP) {
+		    Temp t = new Temp();
+		    emit(OPER("addu `d0 `s0 " + frame.name + "_framesize",
+			      new Temp[]{t}, new Temp[]{frame.SP}));
+		    return t;
+		}
+		return e.temp;
+    }
+
+	    private static String[] BINOP = new String[10];
+	    static {
+		BINOP[compiler.tree.BINOP.PLUS   ] = "add";
+		BINOP[compiler.tree.BINOP.MINUS  ] = "sub";
+		BINOP[compiler.tree.BINOP.MUL    ] = "mulo";
+		BINOP[compiler.tree.BINOP.DIV    ] = "div";
+		BINOP[compiler.tree.BINOP.AND    ] = "and";
+		BINOP[compiler.tree.BINOP.OR     ] = "or";
+		BINOP[compiler.tree.BINOP.LSHIFT ] = "sll";
+		BINOP[compiler.tree.BINOP.RSHIFT ] = "srl";
+		BINOP[compiler.tree.BINOP.ARSHIFT] = "sra";
+		BINOP[compiler.tree.BINOP.XOR    ] = "xor";
+	    }
+
+	    private static int shift(int i) {
+		int shift = 0;
+		if ((i >= 2) && ((i & (i - 1)) == 0)) {
+		    while (i > 1) {
+			shift += 1;
+			i >>= 1;
+		    }
+		}
+		return shift;
+	    }
+
+	    public Temp visit(compiler.tree.BINOP e) {
+	        Temp t = new Temp();
+	        if (immediate(e)) {
+		    int right = ((compiler.tree.CONST)e.right).value;
+		    switch (e.binop) {
+		    case compiler.tree.BINOP.PLUS:
+			{
+			    Temp left = (e.left instanceof compiler.tree.TEMP) ?
+				((compiler.tree.TEMP)e.left).temp : e.left.accept(this);
+			    String off = Integer.toString(right);
+			    if (left == frame.FP) {
+				left = frame.SP;
+				off += "+" + frame.name + "_framesize";
+			    }
+			    emit(OPER("add `d0 `s0 " + off, new Temp[]{t},
+				      new Temp[]{left}));
+			    return t;
+			}
+		    case Tree.BINOP.MUL:
+			{
+			    int shift = shift(right);
+			    if (shift != 0) {
+				emit(OPER("sll `d0 `s0 " + shift, new Temp[]{t},
+					  new Temp[]{e.left.accept(this)}));
+				return t;
+			    }
+			    emit(OPER(BINOP[e.binop] + " `d0 `s0 " + right,
+				      new Temp[]{t}, new Temp[]{e.left.accept(this)}));
+			    return t;
+			}
+		    case Tree.BINOP.DIV:
+			{
+			    int shift = shift(right);
+			    if (shift != 0) {
+				emit(OPER("sra `d0 `s0 " + shift, new Temp[]{t},
+					  new Temp[]{e.left.accept(this)}));
+				return t;
+			    }
+			    emit(OPER(BINOP[e.binop] + " `d0 `s0 " + right,
+				      new Temp[]{t}, new Temp[]{e.left.accept(this)}));
+			    return t;
+			}
+		    default:
+			emit(OPER(BINOP[e.binop] + " `d0 `s0 " + right,
+				  new Temp[]{t}, new Temp[]{e.left.accept(this)}));
+			return t;
+		    }
+		}
+		emit(OPER(BINOP[e.binop] + " `d0 `s0 `s1", new Temp[]{t},
+			  new Temp[]{e.left.accept(this), e.right.accept(this)}));
+		return t;
+	    }
+
+    public Temp visit(compiler.tree.MEM e) {
+	        Temp t = new Temp();
+
+		// MEM(+ Exp CONST)
+		if (e.exp instanceof compiler.tree.BINOP) {
+		    compiler.tree.BINOP b = (compiler.tree.BINOP)e.exp;
+		    
+		    if (b.binop == compiler.tree.BINOP.PLUS && immediate(b)) {
+		    	int right = ((compiler.tree.CONST)b.right).value;
+		    	Temp left = (b.left instanceof compiler.tree.TEMP) ?
+		    			((compiler.tree.TEMP)b.left).temp : b.left.accept(this);
+		    			String off = Integer.toString(right);
+		    	if (left == frame.FP) {
+		    		left = frame.SP;
+		    		off += "+" + frame.name + "_framesize";
+		    	}
+		    	emit(OPER("lw `d0 " + off + "(`s0)", new Temp[]{t},
+				  new Temp[]{left}));
+		    	return t;
+		    }
+		}
+
+		// MEM(CONST)
+		Tree.CONST exp = CONST16(e.exp);
+		if (exp != null) {
+		    emit(OPER("lw `d0 " + exp.value + "(`s0)", new Temp[]{t},
+			      new Temp[]{frame.ZERO}));
+		    return t;
+		}
+
+		// MEM(TEMP)
+		if (e.exp instanceof Tree.TEMP) {
+		    Temp temp = ((Tree.TEMP)e.exp).temp;
+		    if (temp == frame.FP) {
+			emit(OPER("lw `d0 " + frame.name + "_framesize" + "(`s0)",
+				  new Temp[]{t}, new Temp[]{frame.SP}));
+			return t;
+		    }
+		}
+
+		// MEM(Exp)
+		emit(OPER("lw `d0 (`s0)", new Temp[]{t},
+			  new Temp[]{e.exp.accept(this)}));
+		return t;
+	    }
+
+    public Temp visit(compiler.tree.CALL s) {
+		Iterator<compiler.tree.Exp> args = s.args.iterator();
+
+		LinkedList<Temp> uses = new LinkedList<Temp>();
+		
+		Temp V0 = args.next().accept(this);
+		if (V0 != frame.ZERO) {
+		    emit(MOVE("move `d0 `s0", frame.V0, V0));
+		    uses.add(frame.V0);
+		}
+
+		int offset = 0;
+
+		if (args.hasNext()) {
+		    offset += frame.wordSize();
+		    emit(MOVE("move `d0 `s0", frame.A0, args.next().accept(this)));
+		    uses.add(frame.A0);
+		}
+		if (args.hasNext()) {
+		    offset += frame.wordSize();
+		    emit(MOVE("move `d0 `s0", frame.A1, args.next().accept(this)));
+		    uses.add(frame.A1);
+		}
+		if (args.hasNext()) {
+		    offset += frame.wordSize();
+		    emit(MOVE("move `d0 `s0", frame.A2, args.next().accept(this)));
+		    uses.add(frame.A2);
+		}
+		if (args.hasNext()) {
+		    offset += frame.wordSize();
+		    emit(MOVE("move `d0 `s0", frame.A3, args.next().accept(this)));
+		    uses.add(frame.A3);
+		}
+		while (args.hasNext()) {
+		    offset += frame.wordSize();
+		    emit(OPER("sw `s0 " + offset + "(`s1)", null,
+			      new Temp[]{args.next().accept(this), frame.SP}));
+		}
+
+		if (offset > frame.maxArgOffset)
+		    frame.maxArgOffset = offset;
+
+	        if (s.func instanceof Tree.NAME) {
+		    emit(OPER("jal " + ((Tree.NAME)s.func).label.toString(),
+			      frame.calldefs, uses.toArray(new Temp[]{})));
+		    return frame.V0;
+		}
+	        uses.addFirst(s.func.accept(this));
+	        emit(OPER("jal `s0", frame.calldefs, uses.toArray(new Temp[]{})));
+		return frame.V0;
+	    }
+
+	    public void visit(compiler.tree.SEQ n) { throw new Error(); }
+	    public Temp visit(compiler.tree.ESEQ n) { throw new Error(); }
 }
