@@ -1,18 +1,22 @@
 package compiler.frame.Mips;
 
+import compiler.temp.Temp;
 import compiler.tree.Exp;
-import compiler.tree.TEMP;
+import compiler.frame.Access;
 
-public class InReg extends frame.Access
-{
-    compiler.temp.Temp temp;
-
-    public void print(){
-	System.out.println(temp.toString());
+public class InReg extends Access {
+    Temp temp;
+    
+    InReg(Temp t) {
+    	temp = t;
     }
 
-    public Exp exp(Exp frameptr)
-    {
-	return new TEMP(temp);
+    public Exp exp( Exp fp) {
+        return new compiler.tree.TEMP(temp);
+    }
+
+    public String toString() {
+        return temp.toString();
     }
 }
+

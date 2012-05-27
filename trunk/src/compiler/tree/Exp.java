@@ -1,6 +1,11 @@
 package compiler.tree;
 
-abstract public class Exp {
+public abstract class Exp {
+	
+	public Exp(){
+		super();
+	}
+	
 	abstract public ExpList kids();
 
 	abstract public Exp build(ExpList kids);

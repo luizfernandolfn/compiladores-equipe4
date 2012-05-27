@@ -1,27 +1,16 @@
-/*
- * Created on May 28, 2003
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
-package mips;
+package compiler.frame.Mips;
 
-import tree.ExpList;
-import tree.Stm;
+import compiler.tree.ExpList;
+import compiler.tree.Stm;
+import compiler.temp.Label;
 
-/**
- * @author ra992237
- *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 public class STR extends Stm
 {
 	public String str;
-	public temp.Label lab;
+	public compiler.temp.Label lab;
 
-	STR(String s, temp.Label l)
-	{
+	STR(String s, Label l){
+		
 		str = s;
 		lab = l;
 	}
@@ -31,7 +20,7 @@ public class STR extends Stm
 		return null;
 	}
 	
-	public tree.Stm build(ExpList kids)
+	public compiler.tree.Stm build(ExpList kids)
 	{
 		return this;
 	}

@@ -4,6 +4,15 @@ public class SEQ extends Stm {
 	public Stm left, right;
 
 	public SEQ(Stm l, Stm r) {
+		
+		super();
+        
+        if ( l == null )
+            throw new Error("l");
+        
+        if ( r == null )
+            throw new Error("r");
+        
 		left = l;
 		right = r;
 	}

@@ -8,7 +8,7 @@ import compiler.temp.TempMap;
 import compiler.assem.InstrList;
 import compiler.flowgraph.AssemFlowGraph;
 import compiler.flowgraph.FlowGraph;
-import frame.Frame;
+import compiler.frame.Frame;
 import compiler.graph.Node;
 import compiler.graph.NodeList;
 
