@@ -15,4 +15,12 @@ public class EXPE extends Stm{
 	public Stm build(ExpList kids) {
 	    return new EXPE(kids.head);
 	}
+	
+	public void accept(IntVisitor v, int d) { 
+		v.visit(this, d); 
+	}
+	
+	public void accept(CodeVisitor v) { 
+		v.visit(this); 
+	}
 }

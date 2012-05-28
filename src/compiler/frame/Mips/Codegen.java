@@ -1,6 +1,7 @@
 package compiler.frame.Mips;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.ListIterator;
 
 import compiler.assem.Instr;
@@ -22,6 +23,7 @@ import compiler.tree.MEM;
 import compiler.tree.MOVE;
 import compiler.tree.NAME;
 import compiler.tree.TEMP;
+import compiler.util.List;
 
 public class Codegen implements CodeVisitor {
 	
@@ -37,16 +39,16 @@ public class Codegen implements CodeVisitor {
 		insns.add(inst);
 	}
 
-	static Assem.Instr OPER(String a, Temp[] d, Temp[] s, List<Label> j){
-		return new Assem.OPER("\t" + a, d, s, j);
+	static compiler.assem.Instr OPER(String a, TempList d, TempList s, LabelList j){
+		return new compiler.assem.OPER("\t" + a, d, s, j);
 	}
 	    
-	static Assem.Instr OPER(String a, Temp[] d, Temp[] s){
+	static compiler.assem.Instr OPER(String a, TempList d, TempList s){
 		return OPER(a, d, s, null);
 	}
 	    
 	static Instr MOVE(String a, Temp d, Temp s){
-		return new Assem.MOVE("\t" + a, d, s);
+		return new compiler.assem.MOVE("\t" + a, d, s);
 	}
 
 	private static compiler.tree.CONST CONST16(compiler.tree.Exp e){
@@ -82,94 +84,95 @@ public class Codegen implements CodeVisitor {
 		return false;
 	}
 
-	public void visit(Tree.MOVE s) {
+	public void visit(compiler.tree.MOVE s) {
 	
-	if (s.dst instanceof Tree.MEM) {
-	    Tree.MEM mem = (Tree.MEM)s.dst;
+	if (s.dst instanceof compiler.tree.MEM) {
+	    compiler.tree.MEM mem = (compiler.tree.MEM)s.dst;
 
-	   if (mem.exp instanceof Tree.BINOP) {
-		   Tree.BINOP b = (Tree.BINOP)mem.exp;
-		   if (b.binop == Tree.BINOP.PLUS && immediate(b)) {
-			    int right = ((Tree.CONST)b.right).value;
-			    Temp left = (b.left instanceof Tree.TEMP) ?
-				((Tree.TEMP)b.left).temp : b.left.accept(this);
+	   if (mem.exp instanceof compiler.tree.BINOP) {
+		   compiler.tree.BINOP b = (compiler.tree.BINOP)mem.exp;
+		   
+		   if (b.binop == compiler.tree.BINOP.PLUS && immediate(b)) {
+			    int right = ((compiler.tree.CONST)b.right).value;
+			    Temp left = (b.left instanceof compiler.tree.TEMP) ?
+				((compiler.tree.TEMP)b.left).temp : b.left.accept(this);
 			    String off = Integer.toString(right);
 			    if (left == frame.FP) {
 				left = frame.SP;
 				off += "+" + frame.name + "_framesize";
 			}
+			    
 			emit(OPER("sw `s0 " + off + "(`s1)", null,
 			     new Temp[]{s.src.accept(this), left}));
 			   return;
 		 }
 	 }
 
-        // MOVE(MEM(CONST), Exp)
-     Tree.CONST exp = CONST16(mem.exp);
+    compiler.tree.CONST exp = CONST16(mem.exp);
     if (exp != null) {
-	emit(OPER("sw `s0 " + exp.value + "(`s1)", null,
-		  new Temp[]{s.src.accept(this), frame.ZERO}));
-	return;
+		emit(OPER("sw `s0 " + exp.value + "(`s1)", null,
+			  new Temp[]{s.src.accept(this), frame.ZERO}));
+		return;
     }
 
-    // MOVE(MEM(TEMP), Exp)
-    if (mem.exp instanceof Tree.TEMP) {
-	Temp temp = ((Tree.TEMP)mem.exp).temp;
-	if (temp == frame.FP) {
-	    emit(OPER("sw `s0 " + frame.name + "_framesize" + "(`s1)",
-		      null,
-		      new Temp[]{s.src.accept(this), frame.SP}));
-	    return;
-	}
+    if ( mem.exp instanceof compiler.tree.TEMP) {
+		Temp temp = ((compiler.tree.TEMP)mem.exp).temp;
+		if (temp == frame.FP) {
+		    emit(OPER("sw `s0 " + frame.name + "_framesize" + "(`s1)",
+			      null,
+			      new Temp[]{s.src.accept(this), frame.SP}));
+		    return;
+		}
     }
 
-        // MOVE(MEM(Exp), Exp)
         emit(OPER("sw `s0 (`s1)", null,
 	      new Temp[]{s.src.accept(this), mem.exp.accept(this)}));
         return;
 	}
 
         // From here on dst must be a TEMP
-        Temp dst = ((Tree.TEMP)s.dst).temp;
+        Temp dst = ((compiler.tree.TEMP)s.dst).temp;
 
 	// MOVE(TEMP, MEM)
-	if (s.src instanceof Tree.MEM) {
-	    Tree.MEM mem = (Tree.MEM)s.src;
+	if (s.src instanceof compiler.tree.MEM) {
+	    compiler.tree.MEM mem = (compiler.tree.MEM) s.src;
 
 	    // MOVE(TEMP, MEM(+ Exp CONST))
-	    if (mem.exp instanceof Tree.BINOP) {
-		Tree.BINOP b = (Tree.BINOP)mem.exp;
-		if (b.binop == Tree.BINOP.PLUS && immediate(b)) {
-		    int right = ((Tree.CONST)b.right).value;
-		    Temp left = (b.left instanceof Tree.TEMP) ?
-			((Tree.TEMP)b.left).temp : b.left.accept(this);
-		    String off = Integer.toString(right);
-		    if (left == frame.FP) {
-			left = frame.SP;
-			off += "+" + frame.name + "_framesize";
-		    }
-		    emit(OPER("lw `d0 " + off + "(`s0)",
-			      new Temp[]{dst}, new Temp[]{left}));
-		    return;
-		}
+	    if (mem.exp instanceof compiler.tree.BINOP) {
+			compiler.tree.BINOP b = (compiler.tree.BINOP)mem.exp;
+			
+			if (b.binop == compiler.tree.BINOP.PLUS && immediate(b)) {
+			    int right = ((compiler.tree.CONST)b.right).value;
+			    Temp left = (b.left instanceof compiler.tree.TEMP) ?
+				((compiler.tree.TEMP)b.left).temp : b.left.accept(this);
+			    String off = Integer.toString(right);
+			    
+			    if (left == frame.FP) {
+					left = frame.SP;
+					off += "+" + frame.name + "_framesize";
+			    }
+			    emit(OPER("lw `d0 " + off + "(`s0)",
+				      new Temp[]{dst}, new Temp[]{left}));
+			    return;
+			}
 	    }
 
 	    // MOVE(TEMP, MEM(CONST))
-	    Tree.CONST exp = CONST16(mem.exp);
+	    compiler.tree.CONST exp = CONST16(mem.exp);
 	    if (exp != null) {
-		emit(OPER("lw `d0 " + exp.value + "(`s0)",
-			  new Temp[]{dst}, new Temp[]{frame.ZERO}));
-		return;
+			emit(OPER("lw `d0 " + exp.value + "(`s0)",
+				  new Temp[]{dst}, new Temp[]{frame.ZERO}));
+			return;
 	    }
 
 	    // MOVE(TEMP, MEM(TEMP))
-	    if (mem.exp instanceof Tree.TEMP) {
-		Temp temp = ((Tree.TEMP)mem.exp).temp;
-		if (temp == frame.FP) {
-		    emit(OPER("lw `d0 " + frame.name + "_framesize" + "(`s0)",
-			      new Temp[]{dst}, new Temp[]{frame.SP}));
-		    return;
-		}
+	    if (mem.exp instanceof compiler.tree.TEMP) {
+			Temp temp = ((compiler.tree.TEMP)mem.exp).temp;
+			if (temp == frame.FP) {
+			    emit(OPER("lw `d0 " + frame.name + "_framesize" + "(`s0)",
+				      new Temp[]{dst}, new Temp[]{frame.SP}));
+			    return;
+			}
 	    }
 
 	    // MOVE(TEMP, MEM(Exp))
@@ -186,14 +189,13 @@ public class Codegen implements CodeVisitor {
     	s.exp.accept(this); 
     }
 
-    public void visit(Tree.JUMP s) {
-        if (s.exp instanceof Tree.NAME) {
-	    Tree.NAME name = (Tree.NAME)s.exp;
-	    // JUMP(Tree.NAME, List<Label>)
-	    emit(OPER("b " + name.label.toString(), null, null, s.targets));
-	    return;
+    public void visit(compiler.tree.JUMP s) {
+        
+    	if (s.exp instanceof compiler.tree.NAME) {
+		    compiler.tree.NAME name = (compiler.tree.NAME)s.exp;
+		    emit(OPER("b " + name.label.toString(), null, null, s.targets));
+		    return;
 		}
-		// JUMP(Exp, List<Label>)
 		emit(OPER("jr `s0", null, new Temp[]{s.exp.accept(this)}, s.targets));
 		return;
     }
@@ -258,18 +260,20 @@ public class Codegen implements CodeVisitor {
 			CJUMP[compiler.tree.CJUMP.UGE] = "bgeu";
 	    }
 
-	    public void visit(Tree.CJUMP s) {
-	        List<Label> targets = new LinkedList<Label>();
+	    public void visit(compiler.tree.CJUMP s) {
+	        
+	    	List<Label> targets = new LinkedList<Label>();
 	        targets.add(s.iftrue);
-		targets.add(s.iffalse);
+	        targets.add(s.iffalse);
+	        
 	        if (immediate(s)) {
-		    int right = ((Tree.CONST)s.right).value;
-		    // CJUMP(op, Exp, CONST, Label, Label)
-		    emit(OPER(CJUMP[s.relop] + " `s0 " + right + " "
-			      + s.iftrue.toString(),
-			      null, new Temp[]{s.left.accept(this)}, targets));
-		    return;
-		}
+			    int right = ((compiler.tree.CONST)s.right).value;
+			    // CJUMP(op, Exp, CONST, Label, Label)
+			    emit(OPER(CJUMP[s.relop] + " `s0 " + right + " "
+				      + s.iftrue.toString(),
+				      null, new Temp[]{s.left.accept(this)}, targets));
+			    return;
+	        }
 
 	        // CJUMP(op, Exp, Exp, Label, Label)
 	        emit(OPER(CJUMP[s.relop] + " `s0 `s1 " + s.iftrue.toString(),
@@ -278,9 +282,9 @@ public class Codegen implements CodeVisitor {
 		return;
 	    }
 
-    public void visit(Tree.LABEL l) {
-        emit(new Assem.LABEL(l.label.toString() + ":", l.label));
-	return;
+    public void visit(compiler.tree.LABEL l) {
+        emit(new compiler.assem.LABEL(l.label.toString() + ":", l.label));
+        return;
     }
 
     public Temp visit(compiler.tree.CONST e) {
@@ -350,7 +354,7 @@ public class Codegen implements CodeVisitor {
 				      new Temp[]{left}));
 			    return t;
 			}
-		    case Tree.BINOP.MUL:
+		    case compiler.tree.BINOP.MUL:
 			{
 			    int shift = shift(right);
 			    if (shift != 0) {
@@ -362,7 +366,7 @@ public class Codegen implements CodeVisitor {
 				      new Temp[]{t}, new Temp[]{e.left.accept(this)}));
 			    return t;
 			}
-		    case Tree.BINOP.DIV:
+		    case compiler.tree.BINOP.DIV:
 			{
 			    int shift = shift(right);
 			    if (shift != 0) {
@@ -408,7 +412,8 @@ public class Codegen implements CodeVisitor {
 		}
 
 		// MEM(CONST)
-		Tree.CONST exp = CONST16(e.exp);
+		compiler.tree.CONST exp = CONST16(e.exp);
+		
 		if (exp != null) {
 		    emit(OPER("lw `d0 " + exp.value + "(`s0)", new Temp[]{t},
 			      new Temp[]{frame.ZERO}));
@@ -416,8 +421,8 @@ public class Codegen implements CodeVisitor {
 		}
 
 		// MEM(TEMP)
-		if (e.exp instanceof Tree.TEMP) {
-		    Temp temp = ((Tree.TEMP)e.exp).temp;
+		if (e.exp instanceof compiler.tree.TEMP) {
+		    Temp temp = ((compiler.tree.TEMP)e.exp).temp;
 		    if (temp == frame.FP) {
 			emit(OPER("lw `d0 " + frame.name + "_framesize" + "(`s0)",
 				  new Temp[]{t}, new Temp[]{frame.SP}));
@@ -473,8 +478,8 @@ public class Codegen implements CodeVisitor {
 		if (offset > frame.maxArgOffset)
 		    frame.maxArgOffset = offset;
 
-	        if (s.func instanceof Tree.NAME) {
-		    emit(OPER("jal " + ((Tree.NAME)s.func).label.toString(),
+	        if (s.func instanceof compiler.tree.NAME) {
+		    emit(OPER("jal " + ((compiler.tree.NAME)s.func).label.toString(),
 			      frame.calldefs, uses.toArray(new Temp[]{})));
 		    return frame.V0;
 		}
