@@ -1,8 +1,7 @@
-package Translate;
+package compiler.translate;
 
-import Temporary.SimpleExp;
-import Temporary.Temp;
-import Temporary.Offset;
+import compiler.temp.SimpleExp;
+import compiler.temp.Temp;
 
 public class Test{
 	

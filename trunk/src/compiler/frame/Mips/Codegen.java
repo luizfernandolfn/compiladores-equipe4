@@ -24,6 +24,7 @@ import compiler.tree.MEM;
 import compiler.tree.MOVE;
 import compiler.tree.NAME;
 import compiler.tree.TEMP;
+import compiler.assem.OPER;
 
 public class Codegen implements CodeVisitor {
 	
@@ -39,11 +40,11 @@ public class Codegen implements CodeVisitor {
 		insns.add(inst);
 	}
 
-	static compiler.assem.Instr OPER(String a, Temp[] d, Temp[] s, List<Label> j){
+	static compiler.assem.Instr OPER(String a, TempList d, TempList s, LabelList j){
 		return new compiler.assem.OPER("\t" + a, d, s, j);
 	}
 	    
-	static compiler.assem.Instr OPER(String a, Temp[] d, Temp[] s){
+	static compiler.assem.Instr OPER(String a, TempList d, TempList s){
 		return OPER(a, d, s, null);
 	}
 	    

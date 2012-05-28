@@ -8,9 +8,10 @@ import java.util.ListIterator;
 import compiler.symbol.Symbol;
 import compiler.temp.Temp;
 import compiler.temp.Label;
+import compiler.tree.Exp;
+import compiler.tree.ExpList;
 import compiler.frame.Frame;
 import compiler.frame.Access;
-import java.util.Arrays;
 
 public class MipsFrame extends Frame {
 
@@ -173,14 +174,14 @@ public class MipsFrame extends Frame {
 
 	private static HashMap<String, Label> labels = new HashMap<String, Label>();
 
-	public compiler.tree.Exp externalCall(String s, List<compiler.tree.Exp> args) {
+	public compiler.tree.Exp externalCall(String s, ExpList args) {
 		String func = s.intern();
 		Label l = labels.get(func);
 		if (l == null) {
 			l = new Label("_" + func);
 			labels.put(func, l);
 		}
-		args.add(0, new compiler.tree.CONST(0));
+		args = new ExpList(new compiler.tree.CONST(0), args);
 		return new compiler.tree.CALL(new compiler.tree.NAME(l), args);
 	}
 
@@ -437,5 +438,11 @@ public class MipsFrame extends Frame {
 					}
 				}
 		}
+	}
+
+	@Override
+	public Exp externalCall(String func, List<Exp> args) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

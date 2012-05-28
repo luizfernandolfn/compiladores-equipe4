@@ -9,15 +9,15 @@ public class Ex extends Exp {
     	exp = e; 
     }
     
-    compiler.tree.Exp unEx() { 
+    public compiler.tree.Exp unEx() { 
     	return exp; 
     }
     
-    compiler.tree.Stm unNx() { 
+    public compiler.tree.Stm unNx() { 
     	return new compiler.tree.EXPE(exp); 
     }
     
-    compiler.tree.Stm unCx(Label t, Label f) {
+    public compiler.tree.Stm unCx(Label t, Label f) {
 	// if the exp is a constant, emit JUMP statement.
 	if (exp instanceof compiler.tree.CONST) {
 	    compiler.tree.CONST c = (compiler.tree.CONST)exp;

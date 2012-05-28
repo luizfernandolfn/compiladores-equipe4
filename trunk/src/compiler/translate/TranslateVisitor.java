@@ -1,4 +1,4 @@
-package Translate;
+package compiler.translate;
 
 import minijava.node.*;
 import minijava.analysis.*;
@@ -7,18 +7,15 @@ import java.util.LinkedList;
 import java.util.Iterator;
 import java.util.Enumeration;
 import java.util.List;
-import SymbolTable.SymbolTable;
-import SymbolTable.Class;
-import SymbolTable.Method;
-import SymbolTable.Variable;
-import Temp.Label;
-import Temp.Temp;
-import Temp.Offset;
-import Temp.SimpleExp;
-import Symbol.Symbol;
-//import types.*;
-
-//import Frame.Frame;
+import compiler.symbol.SymbolTable;
+import compiler.symbol.Class;
+import compiler.symbol.Method;
+import compiler.symbol.Variable;
+import compiler.temp.Label;
+import compiler.temp.Temp;
+import compiler.temp.Offset;
+import compiler.temp.SimpleExp;
+import compiler.symbol.Symbol;
 
 public class TranslateVisitor extends DepthFirstAdapter {
 
@@ -55,19 +52,19 @@ public class TranslateVisitor extends DepthFirstAdapter {
     private LinkedList frags = new LinkedList();
   
     public void procEntryExit(Exp body) {
-    Frame.Frame myframe = level.frame;
-    Tree.Exp bodyExp = body.unEx();
-    Tree.Stm bodyStm;
-    if (bodyExp != null)
-        bodyStm = MOVE(TEMP(myframe.RV()), bodyExp);
-    else
-        bodyStm = body.unNx();
-    ProcFrag frag = new ProcFrag(bodyStm, myframe);
-    frags.add(frag);
-    }
-
-    public Iterator getResults() {
-    return frags.iterator();
+	    Frame.Frame myframe = level.frame;
+	    Tree.Exp bodyExp = body.unEx();
+	    Tree.Stm bodyStm;
+	    if (bodyExp != null)
+	        bodyStm = MOVE(TEMP(myframe.RV()), bodyExp);
+	    else
+	        bodyStm = body.unNx();
+	    ProcFrag frag = new ProcFrag(bodyStm, myframe);
+	    frags.add(frag);
+	    }
+	
+	    public Iterator getResults() {
+	    return frags.iterator();
     }
 
   // MainClass ClassDeclList

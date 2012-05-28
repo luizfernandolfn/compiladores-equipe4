@@ -19,6 +19,18 @@ class MoveCall extends Stm {
 	public Stm build(ExpList kids) {
 		return new MOVE(dst, src.build(kids));
 	}
+
+	@Override
+	public void accept(IntVisitor v, int d) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void accept(CodeVisitor v) {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 class ExpCall extends Stm {
@@ -34,6 +46,18 @@ class ExpCall extends Stm {
 
 	public Stm build(ExpList kids) {
 		return new EXPE(call.build(kids));
+	}
+
+	@Override
+	public void accept(IntVisitor v, int d) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void accept(CodeVisitor v) {
+		// TODO Auto-generated method stub
+		
 	}
 }
 

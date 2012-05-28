@@ -7,9 +7,9 @@ public class Nx extends Exp {
     
     Nx(compiler.tree.Stm s) { stm = s; }
 
-    compiler.tree.Exp unEx() { return null; }
+    public compiler.tree.Exp unEx() { return null; }
 
-    compiler.tree.Stm unNx() { return stm; }
+    public compiler.tree.Stm unNx() { return stm; }
 
-    compiler.tree.Stm unCx(Label t, Label f) { return null; }
+    public compiler.tree.Stm unCx(Label t, Label f) { return null; }
 }
