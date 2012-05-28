@@ -429,7 +429,7 @@ public class MipsFrame extends Frame {
 									Temp t = new Temp();
 									t.spillTemp = true;
 									insn.replaceDef(spills[s], t);
-									Tree.Stm stm = MOVE(exp, TEMP(t));
+									compiler.tree.Stm stm = MOVE(exp, TEMP(t));
 									stm.accept(new Codegen(this, i));
 									break;
 								}

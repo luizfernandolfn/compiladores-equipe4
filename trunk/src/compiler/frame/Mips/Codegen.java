@@ -2,6 +2,7 @@ package compiler.frame.Mips;
 
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.ListIterator;
 
 import compiler.assem.Instr;
@@ -23,7 +24,6 @@ import compiler.tree.MEM;
 import compiler.tree.MOVE;
 import compiler.tree.NAME;
 import compiler.tree.TEMP;
-import compiler.util.List;
 
 public class Codegen implements CodeVisitor {
 	
@@ -39,11 +39,11 @@ public class Codegen implements CodeVisitor {
 		insns.add(inst);
 	}
 
-	static compiler.assem.Instr OPER(String a, TempList d, TempList s, LabelList j){
+	static compiler.assem.Instr OPER(String a, Temp[] d, Temp[] s, List<Label> j){
 		return new compiler.assem.OPER("\t" + a, d, s, j);
 	}
 	    
-	static compiler.assem.Instr OPER(String a, TempList d, TempList s){
+	static compiler.assem.Instr OPER(String a, Temp[] d, Temp[] s){
 		return OPER(a, d, s, null);
 	}
 	    
