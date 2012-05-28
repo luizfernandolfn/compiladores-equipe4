@@ -9,4 +9,7 @@ abstract public class Stm {
 	abstract public ExpList kids();
 
 	abstract public Stm build(ExpList kids);
+	
+	public abstract void accept(IntVisitor v, int d);
+    public abstract void accept(CodeVisitor v);
 }
