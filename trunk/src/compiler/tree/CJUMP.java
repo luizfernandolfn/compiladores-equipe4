@@ -35,4 +35,12 @@ public class CJUMP extends Stm {
 			default: throw new Error("bad relop in CJUMP.notRel");
 		}
 	}
+	
+	public void accept(IntVisitor v, int d) { 
+		v.visit(this, d); 
+	}
+	
+	public void accept(CodeVisitor v) { 
+		v.visit(this);
+	}
 }

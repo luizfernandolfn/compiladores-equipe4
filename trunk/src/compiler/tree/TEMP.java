@@ -16,4 +16,12 @@ public class TEMP extends Exp {
 	public Exp build(ExpList kids) {
 		return this;
 	}
+	
+	public void accept(IntVisitor v, int d) { 
+		v.visit(this, d); 
+	}
+	
+	public compiler.temp.Temp accept(CodeVisitor v) { 
+		return v.visit(this); 
+	}
 }

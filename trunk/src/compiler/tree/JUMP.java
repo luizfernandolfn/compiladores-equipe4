@@ -23,4 +23,12 @@ public class JUMP extends Stm {
 	public Stm build(ExpList kids) {
 		return new JUMP(kids.head, targets);
 	}
+	
+	public void accept(IntVisitor v, int d) { 
+		v.visit(this, d); 
+	}
+	
+	public void accept(CodeVisitor v) { 
+		v.visit(this); 
+	}
 }

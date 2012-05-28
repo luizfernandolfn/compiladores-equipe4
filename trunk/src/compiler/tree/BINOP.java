@@ -1,5 +1,7 @@
 package compiler.tree;
 
+import compiler.temp.Temp;
+
 public class BINOP extends Exp {
 	public int binop;
 	public Exp left, right;
@@ -18,5 +20,13 @@ public class BINOP extends Exp {
 	
 	public Exp build(ExpList kids) {
 		return new BINOP(binop,kids.head,kids.tail.head);
+	}
+	
+	public void accept(IntVisitor v, int d) { 
+		v.visit(this, d); 
+	}
+	
+	public Temp accept(CodeVisitor v) { 
+		return v.visit(this); 
 	}
 }

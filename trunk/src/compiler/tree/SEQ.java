@@ -24,4 +24,12 @@ public class SEQ extends Stm {
 	public Stm build(ExpList kids) {
 		throw new Error("build() not applicable to SEQ");
 	}
+	
+	public void accept(IntVisitor v, int d) { 
+		v.visit(this, d); 
+	}
+	
+	public void accept(CodeVisitor v) { 
+		v.visit(this); 
+	}
 }
