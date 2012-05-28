@@ -12,7 +12,7 @@ public class RelCx extends Cx {
 		right = r;
     }
 
-    compiler.tree.Stm unCx(Label t, Label f) {
+    public compiler.tree.Stm unCx(Label t, Label f) {
     	return new compiler.tree.CJUMP(op, left, right, t, f);
     }
 }

@@ -1,12 +1,12 @@
-package Translate;
+package compiler.translate;
 
-import Temp.Temp;
-import Temp.Label;
-import Temp.Offset;
+import compiler.temp.Temp;
+import compiler.temp.Label;
+import compiler.temp.Offset;
 import java.util.List;
 import java.util.Iterator;
 import java.util.LinkedList;
-import Symbol.Symbol;
+import compiler.symbol.Symbol;
 
 public class Translate extends DepthFirstAdapter {
 
