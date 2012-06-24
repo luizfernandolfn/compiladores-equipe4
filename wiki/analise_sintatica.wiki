@@ -6,14 +6,14 @@ Espera-se que o analisador sintático relate quaisquer erros de sintaxe e també
 
 Nesta etapa de desenvolvimento, com o uso do JavaCC, temos gerado todos os Scanner e Parser de nosso compilador, tendo sido gerados os arquivos abaixo:
 
-MiniJavaParser.java
-MiniJavaParserConstants.java
-MiniJavaParserTokenManager.java
-ParserException.java
-SimpleCharStream.java
-Token.java
-TokenMgrError.java
-MiniJava.jj
+  * MiniJavaParser.java
+  * MiniJavaParserConstants.java
+  * MiniJavaParserTokenManager.java
+  * ParserException.java
+  * SimpleCharStream.java
+  * Token.java
+  * TokenMgrError.java
+  * MiniJava.jj
 
 Modificamos as derivações da gramática disponibilizada (presente no livro texto da disciplina), para que esta não tivesse ambigüidades e fosse utilizado lookahead 1 no parser preditivo. A gramática disponibilizada necessitaria de lookahead maior que 1. Os
 tokens gerados foram baseados nas regras dessa gramática.
