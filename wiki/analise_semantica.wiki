@@ -1,0 +1,6 @@
+= Análise Semântica =
+
+
+A principal função da análise semântica é criar, a partir do texto fonte, uma interpretação deste texto fonte, expressa em alguma notação adequada - geralmente uma linguagem intermediária do compilador. Isto é feito com base nas informações das tabelas e nas saí das dos outros analisadores.
+
+Um importante componente da análise semântica é a verificação de tipos. Nela o compilador checa se cada operando recebe os operandos que são permitidos na especificação da linguagem fonte. Por exemplo, muitas definições nas linguagens de programação requerem que o compilador relate um erro a cada vez que um número real seja usado para indexar um array.
