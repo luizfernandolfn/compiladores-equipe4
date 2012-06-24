@@ -1,1 +1,18 @@
 = Alocação de Registradores =
+
+
+=== Divisão de tarefas ===
+
+=== Implementação ===
+
+terminada (100%)
+
+=== Funcionalidade Implementadas ===
+
+Geração dos tokens, validação dos tokens.
+  
+=== Dificuldades Encontradas ===
+
+=== Testes ===
+
+Completados com sucesso.
