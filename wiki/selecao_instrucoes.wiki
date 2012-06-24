@@ -4,3 +4,19 @@ Nesta etapa foram utilizadas as classes do pacote Assem do framework, que
 correspondem a instruções mais próximas do nível de máquina, em conjunto com a classe Codegen, que é especfíca de uma arquitetura, que é responsável por percorrer a árvore na linguagem IR e reconhecer padrões (ladrilhos) na árvore para selecionar as instruções relativas a sua arquitetura.
 
 Para testar a emissão de código assembly, foi utilizada a arquitetura proposta no livro, a Jouette Assembly, que contem a maioria das instruções utilizadas em processadores habituais como ADD, MOVE, STORE, etc. O algoritmo utilizado para o reconhecimento de padrões na árvore foi o Maximal Munch, implementado na classe Codegen, que busca por uma solução otimal, ou seja, seleciona o maior ladrilho possível a partir do nó atual.
+
+=== Divisão de tarefas ===
+
+=== Implementação ===
+
+terminada (100%)
+
+=== Funcionalidade Implementadas ===
+
+Geração dos tokens, validação dos tokens.
+  
+=== Dificuldades Encontradas ===
+
+=== Testes ===
+
+Completados com sucesso.
