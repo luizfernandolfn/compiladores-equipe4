@@ -16,6 +16,8 @@ Geração dos tokens, validação dos tokens.
   
 === Dificuldades Encontradas ===
 
+Transformar a gramática dada pelo livro na sintaxe do JavaCC. A forma que a gramática de Exp está dificultou a transformação, mas que no final deu certo eliminando a recursão à esquerda em Exp[Exp], Exp.length e Exp.id(ExpList).
+
 === Testes ===
 
 Completados com sucesso.
