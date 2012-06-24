@@ -172,6 +172,13 @@ Identifier Identifier():
 	{ return id; }
 }
 
+IdentifierExp IdentifierExp():
+{ Token t; IdentifierExp id; }
+{
+	t=<ID> { id = new IdentifierExp(t.image); }
+	{ return id; }
+}
+
 ExpList ExpressionList():
 { ExpList el=new ExpList(); Exp ae; }
 {
@@ -183,22 +190,24 @@ ExpList ExpressionList():
 //******************
 
 Exp Expression():
-{ Exp e1; }
+{ Exp e1, e2; Identifier id; ExpList el;  }
 {
-	( e1=ExpressionTerm()
-	| "(" e1 = Expression() ")"
+	( "(" e1 = Expression() ")"
 	| "!" e1 = Expression()
+	| e1 = ExpressionTerm()
+		 ( LOOKAHEAD(2) "." "length"
+		 	{ e1 = new ArrayLength(e1); }
+		 | "." id=Identifier() "(" el=ExpressionList() ")"		 	{ e1 = new Call(e1, id, el); }
+		 | "[" e2=Expression() "]"			{ e1 = new ArrayLookup(e1, e2); }
+		 | {}
+		 )
 	)
-	//falta: 	exp . length
-	//			exp [ exp ]
-	//			exp . id (explist)
 	{return e1;}
 }
 
 Exp ExpressionTerm():
 { Exp e1, e2; }
-{
-	e1 = ExpressionFactor()
+{	e1 = ExpressionFactor()
 	( "+" e2=ExpressionFactor() { e1 = new Plus(e1,e2); }
 	| "-" e2=ExpressionFactor() { e1 = new Minus(e1,e2); }
 	)*
@@ -218,7 +227,7 @@ Exp ExpressionEnd():
 {
   	( "true" { e1 = new True(); }
   	| "false" { e1 = new False(); }
-  	| e1=Identifier()
+  	| e1=IdentifierExp()
   	| "this" { e1 = new This(); }
   	| e1=IntegerLiteral()
   	| LOOKAHEAD(3) "new" "int" "[" e2=Expression() "]" { e1 = new NewArray(e2); }
