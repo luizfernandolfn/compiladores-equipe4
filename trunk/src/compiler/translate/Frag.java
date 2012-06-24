@@ -1,3 +1,4 @@
 package compiler.translate;
 
-public abstract class Frag {}
+public abstract class Frag {
+}
