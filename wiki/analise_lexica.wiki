@@ -7,3 +7,16 @@ A tarefa principal do analisador léxico é ler os caracteres da entrada do prog
   * Lexema: é uma sequência de caracteres no programa fonte que casa com o padrão para um token e é identificado pelo analisador léxico como uma instância desse token.
 
 O analisador léxico é a parte do compilador que lê o texto fonte, ele pode realizar outras tarefas, como remover comentários e o espaço em branco. Outra tarefa é correlacionar as mensagens de erro geradas pelo compilador com o programa fonte.
+
+=== Divisão de tarefas ===
+
+=== Implementação: terminada (100%) ===
+
+=== Funcionalidade Implementadas ===
+Geração dos tokens, validação dos tokens.
+  
+=== Dificuldades Encontradas ===
+
+== Testes ==
+
+Completados com sucesso.
