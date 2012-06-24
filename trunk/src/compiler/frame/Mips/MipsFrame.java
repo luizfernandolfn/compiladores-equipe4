@@ -8,6 +8,7 @@ import java.util.ListIterator;
 import compiler.symbol.Symbol;
 import compiler.temp.Temp;
 import compiler.temp.Label;
+import compiler.temp.TempList;
 import compiler.tree.Exp;
 import compiler.tree.ExpList;
 import compiler.frame.Frame;
@@ -356,7 +357,7 @@ public class MipsFrame extends Frame {
 		assignCallees(0, body);
 	}
 
-	private static compiler.assem.Instr OPER(String a, Temp[] d, Temp[] s) {
+	private static compiler.assem.Instr OPER(String a, TempList d, TempList s) {
 		return new compiler.assem.OPER(a, d, s, null);
 	}
 
@@ -408,7 +409,7 @@ public class MipsFrame extends Frame {
 					for (ListIterator<compiler.assem.Instr> i = insns.listIterator(); i
 							.hasNext();) {
 						compiler.assem.Instr insn = i.next();
-						Temp[] use = insn.use;
+						TempList use = insn.use;
 						if (use != null)
 							for (int u = 0; u < use.length; u++) {
 								if (use[u] == spills[s]) {

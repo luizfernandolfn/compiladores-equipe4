@@ -444,7 +444,7 @@ public class Codegen implements CodeVisitor {
 	}
 
 	public Temp visit(compiler.tree.CALL s) {
-		Iterator<compiler.tree.Exp> args = s.args.iterator();
+		//Iterator<compiler.tree.Exp> args = s.args.iterator();
 
 		LinkedList<Temp> uses = new LinkedList<Temp>();
 

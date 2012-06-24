@@ -9,7 +9,16 @@ options {
 PARSER_BEGIN(MiniJavaParser)
   package compiler.javacc;
   import compiler.syntaxtree.*;
-  public class MiniJavaParser {}
+  public class MiniJavaParser {
+		public Program parse(){			try {
+			  	System.out.println("Parsed!");			  	return Goal();
+			}catch(TokenMgrError e){
+			  	System.out.println("Fail!");
+				return null;			}catch(ParseException e){
+			  	System.out.println("Fail!");
+			  	return null;			}
+		}
+  }
 PARSER_END(MiniJavaParser)
 
 
