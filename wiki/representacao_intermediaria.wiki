@@ -16,6 +16,8 @@ Geração dos tokens, validação dos tokens.
   
 === Dificuldades Encontradas ===
 
+Nenhuma dificuldade foi encontrada.
+
 === Testes ===
 
 Completados com sucesso.
