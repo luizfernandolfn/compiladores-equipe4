@@ -1,0 +1,38 @@
+= Compiladores 2012.1 - Computação - UFC =
+
+Prof. Francisco Heron de Carvalho Junior
+
+== Descrição Geral ==
+
+Projeto referente ao trabalho da disciplina de Construção de Compiladores, da Universidade Federal do Ceará, semestre 2012.1, ministrada pelo professor Heron Carvalho.
+
+== Equipe ==
+
+  *  Henrique Siqueira Araújo 
+  *  Rômulo Gadelha de Moura Lima
+  *  Ricardo Bustamante de Queiroz
+  *  Vanessa Karla da Silva Oliveira
+
+== Projeto ==
+
+  * Implementar um compilador para a linguagem Mini Java, conforme as orientações e metodologia proposta no livro-texto da disciplina.
+
+== Mini Java ==
+
+  * Mini Java é um subconjunto de Java. O conceito de um programa Mini Java é dado pelo conceito de programa Java. Entretanto, com algumas restrições.
+
+== Índice ==
+
+  * Introdução
+  * Análise Léxica
+  * Análise sintática
+  * Análise Semântica
+    # Árvore de Sintaxe Abstrata
+    # Tabela de Símbolos
+  * Representação Intermediária
+  * Blocos Básicos e Traços
+  * Seleção de Instrução
+  * Análise de Longevidade
+  * Alocação de Registradores
+
+
