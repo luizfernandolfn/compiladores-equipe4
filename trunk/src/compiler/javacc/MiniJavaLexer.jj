@@ -159,6 +159,12 @@ Identifier ai; Exp aei, aej; }
 	) { return stm; }
 }
 
+IntegerLiteral IntegerLiteral():
+{ Token t; IntegerLiteral in; }
+{	t=<INTEGER_LITERAL> { in = new IntegerLiteral(Integer.parseInt(t.image)); }
+	{ return in; }
+}
+
 Identifier Identifier():
 { Token t; Identifier id; }
 {
@@ -177,9 +183,16 @@ ExpList ExpressionList():
 //******************
 
 Exp Expression():
-{}
+{ Exp e1; }
 {
-ExpressionTerm()
+	( e1=ExpressionTerm()
+	| "(" e1 = Expression() ")"
+	| "!" e1 = Expression()
+	)
+	//falta: 	exp . length
+	//			exp [ exp ]
+	//			exp . id (explist)
+	{return e1;}
 }
 
 Exp ExpressionTerm():
@@ -196,26 +209,20 @@ Exp ExpressionFactor():
 { Exp e1, e2; }
 {
 	e1=ExpressionEnd()
-	( "*" e2=ExpressionEnd() { e1 = new Plus(e1,e2); } )*
+	( "*" e2=ExpressionEnd() { e1 = new Times(e1,e2); } )*
 	{ return e1; }
 }
 
 Exp ExpressionEnd():
-{}
+{ Exp e1; Exp e2; Identifier id; }
 {
-	  ExpressionNotRec() /*( "[" Expression() "]" | LOOKAHEAD(2) "." "length" | "." "(" ExpressionList() ")" )*/ 
-}
-
-Exp ExpressionNotRec():
-{}
-{
-	  "(" Expression() ")"
-	| "true"
-	| "false"
-	| Identifier()
-	| "this"
-	| LOOKAHEAD(3) "new" "int" "[" Expression() "]"
-	| "new" "int" Identifier()
-	| "!" Expression()
-	| <INTEGER_LITERAL>
+  	( "true" { e1 = new True(); }
+  	| "false" { e1 = new False(); }
+  	| e1=Identifier()
+  	| "this" { e1 = new This(); }
+  	| e1=IntegerLiteral()
+  	| LOOKAHEAD(3) "new" "int" "[" e2=Expression() "]" { e1 = new NewArray(e2); }
+  	|  "new" "int" id=Identifier() { e1 = new NewObject(id); }
+	)
+	{return e1;} 
 }
