@@ -10,9 +10,12 @@ O analisador léxico é a parte do compilador que lê o texto fonte, ele pode re
 
 === Divisão de tarefas ===
 
-=== Implementação: terminada (100%) ===
+=== Implementação ===
+
+terminada (100%)
 
 === Funcionalidade Implementadas ===
+
 Geração dos tokens, validação dos tokens.
   
 === Dificuldades Encontradas ===
