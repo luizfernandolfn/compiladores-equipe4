@@ -3,3 +3,19 @@
 O Analisador Sintático obtém uma cadeia de tokens proveniente do analisador léxico e verifica se o mesmo pode ser gerado pela gramática da linguagem-fonte.
 
 Espera-se que o analisador sintático relate quaisquer erros de sintaxe e também recupere erros que ocorrem mais comumente, a fim de poder continuar processando o resto de sua entrada.
+
+=== Divisão de tarefas ===
+
+=== Implementação ===
+
+terminada (100%)
+
+=== Funcionalidade Implementadas ===
+
+Geração dos tokens, validação dos tokens.
+  
+=== Dificuldades Encontradas ===
+
+== Testes ==
+
+Completados com sucesso.
