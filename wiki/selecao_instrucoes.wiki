@@ -7,16 +7,19 @@ Para testar a emissão de código assembly, foi utilizada a arquitetura proposta
 
 === Divisão de tarefas ===
 
+
 === Implementação ===
 
-terminada (100%)
+terminada (60%)
 
 === Funcionalidade Implementadas ===
 
-Geração dos tokens, validação dos tokens.
+geração da lista de instruções através dos fragmentos do programa.
   
 === Dificuldades Encontradas ===
 
+
+
 === Testes ===
 
-Completados com sucesso.
+Não foram realizados.
