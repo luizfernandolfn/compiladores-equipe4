@@ -6,17 +6,19 @@ Posteriormente, A IRTree será utilizada em conjunto com as classes Frame e Temp
 
 === Divisão de tarefas ===
 
+Essa fase foi dividida da seguinte forma: Rômulo e Ricardo ficaram responsáveis pela implementação do código; Vanessa e Henrique ficaram responsáveis pela Documentação.
+
 === Implementação ===
 
-terminada (100%)
+Terminada (100%)
 
 === Funcionalidade Implementadas ===
 
-Geração dos tokens, validação dos tokens.
+Geração da árvore IR para a árvore abstrata dada como entrada e os fragmentos do código
   
 === Dificuldades Encontradas ===
 
-Nenhuma dificuldade foi encontrada.
+A maior dificuldade encontrada nessa etapa foi construir a IRTree gerando os fragmentos utilizando o _Frame_ e entender como mostrar o resultado dessa fase.
 
 === Testes ===
 
