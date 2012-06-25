@@ -9,13 +9,15 @@ tokens gerados foram baseados nas regras dessa gramática.
 
 === Divisão de tarefas ===
 
+Grande parte da implementação foi realizada pelo aluno Ricardo Bustamante. A documentação foi realizada pelos outros três alunos.
+
 === Implementação ===
 
-terminada (100%)
+Terminada (100%)
 
 === Funcionalidade Implementadas ===
 
-Geração dos tokens, validação dos tokens.
+Parser da sequência de tokens de entrada e validação do programa de entrada.
   
 === Dificuldades Encontradas ===
 
