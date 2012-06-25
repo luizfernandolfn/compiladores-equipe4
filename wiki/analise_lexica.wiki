@@ -6,15 +6,17 @@ A tarefa principal do analisador léxico é ler os caracteres da entrada do prog
   * Padrão: é uma descrição da forma que os lexemas de um token podem assumir
   * Lexema: é uma sequência de caracteres no programa fonte que casa com o padrão para um token e é identificado pelo analisador léxico como uma instância desse token.
 
-O analisador léxico é a parte do compilador que lê o texto fonte, ele pode realizar outras tarefas, como remover comentários e o espaço em branco. Outra tarefa é correlacionar as mensagens de erro geradas pelo compilador com o programa fonte.
+Ele pode realizar outras tarefas, como remover comentários e o espaço em branco. Outra tarefa é correlacionar as mensagens de erro geradas pelo compilador com o programa fonte.
 
-Nesta etapa, toda nossa programação concentrou-se no arquivo MiniJavaLexer.jj onde foi declarado a Gramática e as suas produções correspondentes. Através do JavaCC foram criados os tokens para uso posterior do Analisador Sintático, vide MiniJavaParserConstants.java.
+Nesta etapa, toda nossa programação concentrou-se no arquivo _MiniJavaLexer_ onde foi declarado a Gramática e as suas produções correspondentes. Através do JavaCC foram criados os tokens para uso posterior do Analisador Sintático, vide _MiniJavaParserConstants_.
 
 === Divisão de tarefas ===
 
+Todos os membros ficaram responsáveis pela implementação.
+
 === Implementação ===
 
-terminada (100%)
+Terminada (100%)
 
 === Funcionalidade Implementadas ===
 
@@ -22,7 +24,7 @@ Geração dos tokens, validação dos tokens.
   
 === Dificuldades Encontradas ===
 
-Nenhuma dificuldade encontrada.
+Não houve maiores dificuldades na implementação deste módulo.
 
 === Testes ===
 
