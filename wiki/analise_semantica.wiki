@@ -14,15 +14,19 @@ podemos representar que operação vai ser executada sobre elementos de uma estr
 
 === Divisão de tarefas ===
 
+A parte referente a tabela de símbolos foi implementada pelos alunos Vanessa Karla e Ricardo Bustamante. A parte referente a checagem de tipos foi implementada pelos alunos Rômulo Gadelha e Henrique Araújo.
+
 === Implementação ===
 
-terminada (100%)
+Terminada (100%)
 
 === Funcionalidade Implementadas ===
 
-Geração dos tokens, validação dos tokens.
+Geração da árvore abstrata, construção da tabela de tipos e implementação da checagem de tipos do programa de entrada.
   
 === Dificuldades Encontradas ===
+
+Após o perfeito entendimento de como o padrão _Visitor_ funcionava, não houve maiores dificuldades na implementação deste módulo.
 
 === Testes ===
 
