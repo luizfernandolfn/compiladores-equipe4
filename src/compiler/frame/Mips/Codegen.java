@@ -478,8 +478,7 @@ public class Codegen implements CodeVisitor {
 		}
 		while (args.hasNext()) {
 			offset += frame.wordSize();
-			emit(OPER("sw `s0 " + offset + "(`s1)", null, new Temp[] {
-					args.next().accept(this), frame.SP }));
+			emit(OPER("sw `s0 " + offset + "(`s1)", null, new Temp[] { args.next().accept(this), frame.SP }));
 		}
 
 		if (offset > frame.maxArgOffset)
