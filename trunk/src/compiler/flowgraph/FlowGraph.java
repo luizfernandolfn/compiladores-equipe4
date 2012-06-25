@@ -2,7 +2,6 @@ package compiler.flowgraph;
 
 import compiler.temp.TempList;
 import compiler.graph.Graph;
-import compiler.graph.Graph;
 import compiler.graph.NodeList;
 import compiler.graph.Node;
 

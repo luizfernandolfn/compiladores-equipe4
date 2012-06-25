@@ -13,7 +13,9 @@ public class CJUMP extends Stm {
 		relop=rel; left=l; right=r; iftrue=t; iffalse=f;
 	}
 
-	public ExpList kids() {return new ExpList(left, new ExpList(right,null));}
+	public ExpList kids() {
+		return new ExpList(left, new ExpList(right,null));
+	}
 	
 	public Stm build(ExpList kids) {
 		return new CJUMP(relop,kids.head,kids.tail.head,iftrue,iffalse);
