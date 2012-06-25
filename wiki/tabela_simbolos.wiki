@@ -6,12 +6,22 @@ Como trata-se de uma linguagem imperativa (já que é uma restrição da linguag
 
 As classes referentes à implementação da tabela de símbolos podem ser encontrados nos pacotes: compiler.symboltable, onde são encontradas as classes que representam a estrutura de dados que armazena a tabela de símbolos e o _Visitor_ que, a partir da árvore sintática constrói a tabela; TypeChecking, onde é definido o Visitor que faz a checagem de tipos.
 
+=== Divisão de tarefas ===
 
+Todos os alunos participaram da implementação dessa parte.
 
+=== Implementação ===
 
+Terminada (100%)
 
+=== Funcionalidade Implementadas ===
 
+Construção da tabela de tipos e efetuação da checagem de tipos do programa.
+  
+=== Dificuldades Encontradas ===
 
 Nessa parte da implementação todos fizeram uma parte, principalmente na parte de verificação de tipos, que foi o que mais tivemos dificuldades para a implementação, pois, primeiro estávamos com dificuldades para entender como construir a tabelas de símbolos e verificar cada tipo.
 
-Essa fase foi dividida da seguinte forma: Vanessa e Henrique ficaram responsáveis pela criação da Tabela de Símbolo; Ricardo e Rômulo ficaram responsáveis pela implementação dos Visitors.
+=== Testes ===
+
+Completados com sucesso.
