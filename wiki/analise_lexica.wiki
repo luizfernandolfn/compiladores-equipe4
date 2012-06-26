@@ -8,11 +8,11 @@ A tarefa principal do analisador léxico é ler os caracteres da entrada do prog
 
 Ele pode realizar outras tarefas, como remover comentários e o espaço em branco. Outra tarefa é correlacionar as mensagens de erro geradas pelo compilador com o programa fonte.
 
-Nesta etapa, toda nossa programação concentrou-se no arquivo _Minijavalexer_ onde foi declarado a Gramática e as suas produções correspondentes. Através do JavaCC foram criados os tokens para uso posterior do Analisador Sintático, vide _MiniJavaParserConstants_.
+Nesta etapa, toda nossa programação concentrou-se no arquivo _Minijavalexer_ onde foi declarado a Gramática e as suas produções correspondentes. Através do JavaCC foram criados os tokens para uso posterior do Analisador Sintático, vide _Minijavaparserconstants_.
 
 === Divisão de tarefas ===
 
-Todos os membros ficaram responsáveis pela implementação.
+Todos os membros ajudaram na implementação desse módulo.
 
 === Implementação ===
 
@@ -20,7 +20,7 @@ Terminada (100%)
 
 === Funcionalidade Implementadas ===
 
-Geração dos tokens, validação dos tokens.
+Geração dos _tokens_ e validação dos _tokens_.
   
 === Dificuldades Encontradas ===
 
