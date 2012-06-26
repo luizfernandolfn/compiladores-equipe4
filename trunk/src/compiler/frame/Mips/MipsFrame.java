@@ -9,8 +9,6 @@ import compiler.temp.Temp;
 import compiler.temp.Label;
 import compiler.frame.Frame;
 import compiler.frame.Access;
-import java.util.Arrays;
-import compiler.assem.*;
 
 public class MipsFrame extends Frame {
 
