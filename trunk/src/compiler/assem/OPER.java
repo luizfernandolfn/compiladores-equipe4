@@ -1,42 +1,37 @@
 package compiler.assem;
 
-import compiler.temp.LabelList;
-import compiler.temp.TempList;
+import java.util.List;
+import java.util.LinkedList;
+import compiler.temp.*;
 
 public class OPER extends Instr {
-	public TempList dst;
-	public TempList src;
-	public Targets jump;
+   public Temp[] dst;   
+   public Temp[] src;
+   public Targets jump;
 
-	public OPER(String a, TempList d, TempList s, LabelList j) {
-		assem = a;
-		dst = d;
-		src = s;
-		jump = new Targets(j);
+   public OPER(String a, Temp[] d, Temp[] s, LabelList j) {
+	LinkedList list = new LinkedList();
+	while(j!=null){
+		list.add(j.head);
+		j=j.tail;
 	}
 
-	public OPER(String a, TempList d, TempList s) {
-		assem = a;
-		dst = d;
-		src = s;
-		jump = null;
-	}
+      assem=a; dst=d; src=s; jump=new Targets(list);
+   }
+   
+   public OPER(String a, Temp[] d, Temp[] s, List<Label> j) {
+      assem=a; dst=d; src=s; jump=new Targets(j);
+   }
+   
+   public OPER(String a, Temp[] d, Temp[] s) {
+      assem=a; dst=d; src=s; jump=null;
+   }
 
-	@Override
-	public TempList use() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+   public Temp[] use() {return src;}
+   public Temp[] def() {return dst;}
+   public Targets jumps() { return jump;}
 
-	@Override
-	public TempList def() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Targets jumps() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+   public String toString() {
+	return "OPER["+assem+"]"+"["+toString(dst)+"]"+"["+toString(src)+"]"+"["+toString(jump)+"]";
+   }
 }

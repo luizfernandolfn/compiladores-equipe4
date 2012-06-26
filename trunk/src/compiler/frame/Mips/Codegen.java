@@ -40,8 +40,8 @@ public class Codegen implements CodeVisitor {
 		insns.add(inst);
 	}
 
-	static compiler.assem.Instr OPER(String a, TempList d, TempList s,
-			LabelList j) {
+	static compiler.assem.Instr OPER(String a, Temp[] d, Temp[] s,
+			List<Label> j) {
 		return new compiler.assem.OPER("\t" + a, d, s, j);
 	}
 
@@ -444,7 +444,7 @@ public class Codegen implements CodeVisitor {
 	}
 
 	public Temp visit(compiler.tree.CALL s) {
-		//Iterator<compiler.tree.Exp> args = s.args.iterator();
+		Iterator<compiler.tree.Exp> args = s.args.iterator();
 
 		LinkedList<Temp> uses = new LinkedList<Temp>();
 

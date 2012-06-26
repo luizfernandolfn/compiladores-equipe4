@@ -1,28 +1,17 @@
 package compiler.assem;
 
-import compiler.temp.Temp;
-import compiler.temp.TempList;
-
 public class MOVE extends Instr {
-	public Temp dst;
-	public Temp src;
+   public compiler.temp.Temp dst;   
+   public compiler.temp.Temp src;
 
-	public MOVE(String a, Temp d, Temp s) {
-		assem = a;
-		dst = d;
-		src = s;
-	}
-
-	public TempList use() {
-		return new TempList(src, null);
-	}
-
-	public TempList def() {
-		return new TempList(dst, null);
-	}
-
-	public Targets jumps() {
-		return null;
-	}
-
+   public MOVE(String a, compiler.temp.Temp d, compiler.temp.Temp s) {
+      assem=a; dst=d; src=s;
+   }
+   public compiler.temp.Temp[] use() {return new compiler.temp.Temp[]{src};}
+   public compiler.temp.Temp[] def() {return new compiler.temp.Temp[]{dst};}
+   
+   public Targets jumps()     {return null;}
+   public String toString() {
+	return "MOVE[" + assem + "]["+dst + "]["+src+"]";
+   }
 }
