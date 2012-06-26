@@ -21,7 +21,7 @@ Parser da sequência de tokens de entrada e validação do programa de entrada.
   
 === Dificuldades Encontradas ===
 
-Transformar a gramática dada pelo livro na sintaxe do JavaCC. A forma que a gramática de Exp está dificultou a transformação, mas que no final deu certo eliminando a recursão à esquerda em Exp[Exp], Exp.length e Exp.id(ExpList).
+Transformar a gramática dada pelo livro na sintaxe do JavaCC. A forma que a gramática de Exp está dificultou a transformação, mas que no final deu certo eliminando a recursão à esquerda nos três casos especiais de Exp.
 
 === Testes ===
 
