@@ -1,26 +1,17 @@
 package compiler.assem;
 
-import compiler.temp.Label;
-import compiler.temp.TempList;
-
 public class LABEL extends Instr {
-	public Label label;
+   public compiler.temp.Label label;
 
-	public LABEL(String a, Label l) {
-		assem = a;
-		label = l;
-	}
+   public LABEL(String a, compiler.temp.Label l) {
+      assem=a; label=l;
+   }
 
-	public TempList use() {
-		return null;
-	}
+   public compiler.temp.Temp[] use() {return null;}
+   public compiler.temp.Temp[] def() {return null;}
+   public Targets jumps() {return null;}
 
-	public TempList def() {
-		return null;
-	}
-
-	public Targets jumps() {
-		return null;
-	}
-
+   public String toString() {
+	return "LABEL["+assem +"]["+ label+"]";
+   }
 }

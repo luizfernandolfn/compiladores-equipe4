@@ -1,13 +1,7 @@
 package compiler.assem;
-
-import compiler.temp.LabelList;
+import java.util.List;
 
 public class Targets {
-	
-	public LabelList labels;
-    
-    public Targets( LabelList l)
-    {
-        labels=l;
-    }
+  public List labels;
+  public Targets(List l) {labels=l;}
 }

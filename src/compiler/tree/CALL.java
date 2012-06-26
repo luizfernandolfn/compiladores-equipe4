@@ -1,5 +1,7 @@
 package compiler.tree;
 
+import java.util.List;
+
 import compiler.temp.Temp;
 
 public class CALL extends Exp {
@@ -9,6 +11,10 @@ public class CALL extends Exp {
 	public CALL(Exp f, ExpList a) {
 		func=f; 
 		args=a;
+	}
+	
+	public CALL(Exp f, List<Exp> a){
+		
 	}
 	
 	public ExpList kids() {

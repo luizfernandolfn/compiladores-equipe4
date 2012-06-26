@@ -1,7 +1,5 @@
 package compiler.translate;
 
-import minijava.node.*;
-import minijava.analysis.*;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.Iterator;
