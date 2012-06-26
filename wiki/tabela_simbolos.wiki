@@ -8,7 +8,7 @@ As classes referentes à implementação da tabela de símbolos podem ser encont
 
 === Divisão de tarefas ===
 
-Todos os alunos participaram da implementação dessa parte.
+A parte referente a tabela de símbolos foi implementada pelos alunos Vanessa Karla e Ricardo Bustamante.
 
 === Implementação ===
 
