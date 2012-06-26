@@ -1,7 +1,8 @@
 package compiler.assem;
 
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
+
 import compiler.temp.*;
 
 public class OPER extends Instr {
@@ -17,6 +18,10 @@ public class OPER extends Instr {
 	}
 
       assem=a; dst=d; src=s; jump=new Targets(list);
+   }
+   
+   public OPER(String a, TempList d, TempList s, LabelList j) {
+
    }
    
    public OPER(String a, Temp[] d, Temp[] s, List<Label> j) {

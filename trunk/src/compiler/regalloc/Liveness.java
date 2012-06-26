@@ -1,13 +1,10 @@
 package compiler.regalloc;
 
-import java.io.*;
 import java.util.*;
 import compiler.graph.Node;
 import compiler.graph.Graph;
 import compiler.graph.NodeList;
-import compiler.temp.TempList;
 import compiler.temp.Temp;
-import compiler.flowgraph.FlowGraph;
 
 public class Liveness extends InterferenceGraph {
 	  boolean debug=true;
